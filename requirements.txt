@@ -1,0 +1,9 @@
+librosa
+numba
+click
+pillow
+pandas
+scikit-learn
+tensorflow==2.4
+tensorboard==2.4
+keras-applications
