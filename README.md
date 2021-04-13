@@ -6,8 +6,8 @@
 **DeepSpectrumLite** is a Python toolkit to design and train light-weight Deep Neural Networks (DNNs) for classification tasks from raw audio data.
 The trained models run on embedded devices.
 
-DeepSpectrumLite features an extraction pipeline which first creates visual representations for audio data - plots of spectrograms.
-The image plots are then fed to a DNN. This could be a pre-trained Image Convolutional Neural Network (CNN). 
+DeepSpectrumLite features an extraction pipeline that first creates visual representations for audio data - plots of spectrograms.
+The image plots are then fed into a DNN. This could be a pre-trained Image Convolutional Neural Network (CNN). 
 Activations of a specific layer then form the final feature vectors which are used for the final classification.
 
 The trained models can be easily converted to a TensorFlow Lite model. During the converting process, the model becomes smaller and faster optimised for inference on embedded devices.
