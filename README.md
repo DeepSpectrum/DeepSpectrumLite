@@ -3,11 +3,11 @@
 [![PyPI version](https://badge.fury.io/py/DeepSpectrumLite.svg)](https://badge.fury.io/py/DeepSpectrumLite)
 ![PyPI - License](https://img.shields.io/pypi/l/DeepSpectrumLite)
 
-**DeepSpectrumLite** is a Python toolkit to design and train light-weight Deep Neural Networks (DNNs) for classification tasks from raw audio data .
+**DeepSpectrumLite** is a Python toolkit to design and train light-weight Deep Neural Networks (DNNs) for classification tasks from raw audio data.
 The trained models run on embedded devices.
 
 DeepSpectrumLite features an extraction pipeline which first creates visual representations for audio data - plots of spectrograms.
-The image splots are then fed to a DNN. This could be a pre-trained Image Convolutional Neural Network (CNN). 
+The image plots are then fed to a DNN. This could be a pre-trained Image Convolutional Neural Network (CNN). 
 Activations of a specific layer then form the final feature vectors which are used for the final classification.
 
 The trained models can be easily converted to a TensorFlow Lite model. During the converting process, the model becomes smaller and faster optimised for inference on embedded devices.
@@ -18,7 +18,7 @@ Published under GPLv3, please see the `LICENSE` file for details.
 Please direct any questions or requests to Shahin Amiriparian (shahin.amiriparian at informatik.uni-augsburg.de) or Tobias Hübner (tobias.huebner at informatik.uni-augsburg.de).
 
 # Why DeepSpectrumLite?
-DeepSpectrumLite is built apon TensorFlow Lite which is a specialised version of TensorFlow that supports embedded decvies.
+DeepSpectrumLite is built upon TensorFlow Lite which is a specialised version of TensorFlow that supports embedded devices.
 However, TensorFlow Lite does not support all basic TensorFlow functions for audio signal processing and plot image generation. DeepSpectrumLite offers implementations for unsupported functions.
 
 # Installation
@@ -37,7 +37,7 @@ conda env create -f environment.yml
 conda activate ./env
 ```
 
-## CPU support
+## GPU support
 DeepSpectrumLite uses TensorFlow 2.4.0. GPU support should be automatically available, as long as you have CUDA version 11.0. If you cannot install cuda 11.0 globally, you can use Anaconda to install it in a virtual environment along DeepSpectrumLite.
 
 # Getting started
@@ -104,7 +104,7 @@ The hyper parameter configuration grid is defined in a json file. You can add mo
 | prediction_type | enum ['categorical', 'regression'] | Define whether you have a categorical or a regression problem to solve. |    false | categorical |
 | model_name      | string                             | The model class that is used for training. For Transfer Learning use 'TransferBaseModel' | false | TransferBaseModel |
 | basemodel_name | string | The base model name that is used for training. Available models: `vgg16`, `vgg19`, `resnet50`, `xception`, `inception_v3`, `densenet121`, `densenet169`, `densenet201`, `mobilenet`, `mobilenet_v2`, `nasnet_large`, `nasnet_mobile`, `inception_resnet_v2`, `squeezenet_v1` | true | |
-| weights | enum ['imagenet', ''] | If set to 'imagenet', the base model defined in basemodel_name uses weights from pre-trainined on imagenet. Otherwise, the model defined in basemodel_name has random weights. | false | imagenet |
+| weights | enum ['imagenet', ''] | If set to 'imagenet', the base model defined in basemodel_name uses weights from pre-trained on imagenet. Otherwise, the model defined in basemodel_name has random weights. | false | imagenet |
 | tb_experiment | string | The name of the tensorboard dashboard. The name is used a directory. | true | |
 | tb_run_id | string | The name of this experiment setting for the tensorboard dashboard. The name is used a subdirectory. You can define a generic tb_experiment which uses different runs with different configuration settings. When having more than one configuration within a grid, the tb_run_id is automatically extended by `_config_[NUMBER]`.| true | |
 | num_unit| int | The number of units that are used for dense layer in the final MLP classifier. | true | |
@@ -116,7 +116,7 @@ The hyper parameter configuration grid is defined in a json file. You can add mo
 | activation | string | The activation function that is used in the dense layers in the final MLP classifier. All activation functions from TensorFlow and "arelu" are supported. | true | |
 | pre_epochs | int | The number of epochs of training. When the model_name is 'TransferBaseModel', the pre_epochs defines how long the base model is trained in a frozen state. After reaching the pre_epochs, the model the last layers (share defined in 'finetune_layer') are unfrozen and trained again for 'epochs' epochs. | true | |
 | finetune_layer | float | The amount of layers (share in percent) of the last layers of the base model that are unfrozen after pre_epochs | true | |
-| batch_size | int | The batch size of the traning | true | |
+| batch_size | int | The batch size of the training | true | |
 
 ### Preprocessing Configurations
 
