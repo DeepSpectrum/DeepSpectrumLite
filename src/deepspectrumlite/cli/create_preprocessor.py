@@ -16,12 +16,10 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # ==============================================================================
-
-'''
-This script converts a h5 file to a tflite file
-'''
+import logging
+import click
+from .utils import add_options
 import os
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # print only error messages
 import sys
 import tensorflow as tf
 from tensorflow import keras
@@ -31,23 +29,27 @@ from tensorflow.python.saved_model import loader_impl
 from deepspectrumlite import HyperParameterList, PreprocessAudio
 import time
 import numpy as np
-import argparse
+from os.path import join, dirname, realpath
 
+log = logging.getLogger(__name__)
 
-def print_version():
-    print(tf.version.GIT_VERSION, tf.version.VERSION)
+_DESCRIPTION = 'Creates a DeepSpectrumLite preprocessor TFLite file.'
 
-if __name__ == "__main__":
+@add_options(
+[
+    click.option(
+        "-hc",
+        "--hyper-config",
+        type=click.Path(exists=True, writable=False, readable=True),
+        help="Directory for the hyper parameter config file.",
+        default=join(dirname(realpath(__file__)), "config/hp_config.json"), show_default=True
+    )
+]
+)
 
-    print_version()
-
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-hc', '--hyper-config', type=str, dest='hyper_config_file',
-                        default='../config/hp_config.json',
-                        help='Directory for the hyper parameter config file (default: %(default)s)')
-    args = parser.parse_args()
-
-    hyper_parameter_list = HyperParameterList(config_file_name=args.hyper_config_file)
+@click.command(help=_DESCRIPTION)
+def create_preprocessor(hyper_config, **kwargs):
+    hyper_parameter_list = HyperParameterList(config_file_name=hyper_config)
     hparam_values = hyper_parameter_list.get_values(iteration_no=0)
     preprocess = PreprocessAudio(hparams=hparam_values, name="dsl_audio_preprocessor")
     input = tf.convert_to_tensor(np.array(np.random.random_sample((1, 16000)), dtype=np.float32), dtype=tf.float32)
@@ -69,8 +71,8 @@ if __name__ == "__main__":
     interpreter = tf.lite.Interpreter(model_path="preprocessor_model.tflite")
     input_details = interpreter.get_input_details()
     output_details = interpreter.get_output_details()
-    print(input_details)
-    print(output_details)
+    log.debug(input_details)
+    log.debug(output_details)
 
     interpreter.allocate_tensors()
 
@@ -82,8 +84,8 @@ if __name__ == "__main__":
 
     # Test model on random input data.
     input_shape = input_details[0]['shape']
-    print("input shape: ", input_shape)
-    print("output shape: ", output_details[0]['shape'])
+    log.debug("input shape: ", input_shape)
+    log.debug("output shape: ", output_details[0]['shape'])
     input_data = np.array(np.random.random_sample(input_shape), dtype=np.float32)
     interpreter.set_tensor(input_details[0]['index'], input_data)
     start_time = time.time()
@@ -91,8 +93,9 @@ if __name__ == "__main__":
     stop_time = time.time()
     output_data = interpreter.get_tensor(output_details[0]['index'])
 
-    print(output_data)
-    print('time: {:.3f}ms'.format((stop_time - start_time) * 1000))
+    log.debug(output_data)
+    log.debug('time: {:.3f}ms'.format((stop_time - start_time) * 1000))
+    log.info("Finished creating the TFLite preprocessor")
 
 
 

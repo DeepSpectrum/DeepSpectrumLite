@@ -16,22 +16,17 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # ==============================================================================
-import abc
 import re
-
-from AbstractParser import AbstractParser
 import pandas as pd
 import numpy as np
 
 
-class ComParEParser(AbstractParser):
-    __metaclass__ = abc.ABCMeta
+class ComParEParser:
 
     def __init__(self, file_path: str, delimiter=','):
-        super().__init__(file_path)
+        self._file_path = file_path
         self._delimiter = delimiter
 
-    @abc.abstractmethod
     def parse_labels(self):
         complete = pd.read_csv(self._file_path, sep=self._delimiter)
         complete.columns = ['filename', 'label', 'duration_frames']

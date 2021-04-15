@@ -354,12 +354,6 @@ def test_mfcc_tflite():
 
     test_tflite(model)
 
-
-def print_version():
-    print(tf.version.GIT_VERSION, tf.version.VERSION)
-
-# print_version()
-
 # test_mfcc_tflite()
 # test_rnn_gru_tflite()
 # test_rnn_gru_save_load("h5")

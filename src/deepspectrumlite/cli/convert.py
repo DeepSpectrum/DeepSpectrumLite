@@ -16,12 +16,10 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # ==============================================================================
-
-'''
-This script converts a h5 file to a tflite file
-'''
+import logging
+import click
+from .utils import add_options
 import os
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # print only error messages
 import sys
 import tensorflow as tf
 from tensorflow import keras
@@ -30,34 +28,41 @@ from tensorflow.keras import backend as K
 from tensorflow.python.saved_model import loader_impl
 from deepspectrumlite import AugmentableModel, ARelu
 import numpy as np
+from os.path import join, dirname, realpath
 
+log = logging.getLogger(__name__)
 
-def print_version():
-    print(tf.version.GIT_VERSION, tf.version.VERSION)
+_DESCRIPTION = 'Converts a DeepSpectrumLite model to a TFLite model file.'
 
+@add_options(
+[
+    click.option(
+        "-s",
+        "--source",
+        type=click.Path(exists=True, writable=False, readable=True),
+        help="Source HD5 model file",
+        required=True
+    ),
+    click.option(
+        "-d",
+        "--destination",
+        type=click.Path(exists=True, writable=False, readable=True),
+        help="Destination TFLite model file",
+        required=True
+    )
+]
+)
 
-if __name__ == "__main__":
-
-    print_version()
-
-    if len(sys.argv) > 1:
-        source = str(sys.argv[1])
-    else:
-        source = "model_run-0/model.h5"
-
-    if len(sys.argv) > 1:
-        destination = str(sys.argv[2])
-    else:
-        destination = 'converted_model.tflite'
-
-    print("Load model: " + source)
+@click.command(help=_DESCRIPTION)
+def convert(source, destination, **kwargs):
+    log.info("Load model: " + source)
 
     # loader_impl.parse_saved_model(source)
 
     new_model = tf.keras.models.load_model(source,
                                            custom_objects={'AugmentableModel': AugmentableModel, 'ARelu': ARelu},
                                            compile=False)
-    print("Successfully loaded model: " + source)
+    log.info("Successfully loaded model: " + source)
 
     converter = tf.lite.TFLiteConverter.from_keras_model(new_model)
     converter.target_spec.supported_ops = [tf.lite.OpsSet.TFLITE_BUILTINS,
@@ -66,7 +71,7 @@ if __name__ == "__main__":
     tflite_quant_model = converter.convert()
     open(destination, "wb").write(tflite_quant_model)
 
-    print("Model was saved as tflite as " + destination)
+    log.info("Model was saved as tflite as " + destination)
 
     interpreter = tf.lite.Interpreter(model_content=tflite_quant_model)
 
@@ -83,12 +88,12 @@ if __name__ == "__main__":
 
     # Test model on random input data.
     input_shape = input_details[0]['shape']
-    print("input shape: ", input_shape)
-    print("output shape: ", output_details[0]['shape'])
+    log.debug("input shape: ", input_shape)
+    log.debug("output shape: ", output_details[0]['shape'])
     input_data = np.array(np.random.random_sample(input_shape), dtype=np.float32)
     interpreter.set_tensor(input_details[0]['index'], input_data)
 
     interpreter.invoke()
     output_data = interpreter.get_tensor(output_details[0]['index'])
 
-    print(output_data)
+    log.debug(output_data)

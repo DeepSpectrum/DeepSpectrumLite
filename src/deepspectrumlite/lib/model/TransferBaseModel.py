@@ -112,7 +112,7 @@ class TransferBaseModel(Model):
 
         model = AugmentableModel(inputs=input, outputs=predictions, hy_params=hy_params, name=hy_params['basemodel_name'])
 
-        ai_model.Model.model = model
+        self.model = model
         self.compile_model()
 
     def train(self, train_dataset: tf.data.Dataset, devel_dataset: tf.data.Dataset):

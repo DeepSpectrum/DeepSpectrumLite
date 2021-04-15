@@ -16,13 +16,10 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # ==============================================================================
-
-'''
-This script converts a h5 file to a tflite file
-'''
+import logging
+import click
+from .utils import add_options
 import os
-
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # print only error messages
 import sys
 import tensorflow as tf
 from tensorflow import keras
@@ -33,7 +30,6 @@ from deepspectrumlite import AugmentableModel, DataPipeline, HyperParameterList,
 import glob
 from pathlib import Path
 import numpy as np
-import argparse
 import importlib
 import json
 from sklearn.metrics import recall_score, classification_report, confusion_matrix
@@ -41,43 +37,56 @@ import csv
 import json
 import pandas as pd
 from collections import Counter
+from os.path import join, dirname, realpath
 
+log = logging.getLogger(__name__)
 
-def print_version():
-    print(tf.version.GIT_VERSION, tf.version.VERSION)
+_DESCRIPTION = 'Test a DeepSpectrumLite transer learning model.'
 
+@add_options(
+[
+    click.option(
+        "-d",
+        "--data-dir",
+        type=click.Path(exists=True),
+        help="Directory of data class categories containing folders of each data class.",
+        required=True
+    ),
+    click.option(
+        "-md",
+        "--model-dir",
+        type=click.Path(exists=False, writable=True),
+        help="Directory for all training output (logs and final model files).",
+        required=True
+    ),
+    click.option(
+        "-hc",
+        "--hyper-config",
+        type=click.Path(exists=True, writable=False, readable=True),
+        help="Directory for the hyper parameter config file.",
+        default=join(dirname(realpath(__file__)), "config/hp_config.json"), show_default=True
+    ),
+    click.option(
+        "-cc",
+        "--class-config",
+        type=click.Path(exists=True, writable=False, readable=True),
+        help="Directory for the class config file.",
+        default=join(dirname(realpath(__file__)), "config/class_config.json"), show_default=True
+    ),
+    click.option(
+        "-l",
+        "--label-file",
+        type=click.Path(exists=True, writable=False, readable=True),
+        help="Directory for the label file.",
+        required=True
+    )
+]
+)
 
-if __name__ == "__main__":
+@click.command(help=_DESCRIPTION)
+def devel_test(model_dir, data_dir, class_config, hyper_config, label_file, **kwargs):
 
-    print_version()
-
-    parser = argparse.ArgumentParser()
-
-    parser.add_argument('-d', '--data-dir', type=str, dest='data_dir',
-                        default='',
-                        help='Directory of data class categories containing folders of each data class'
-                             ' (default: %(default)s)')
-    parser.add_argument('-hc', '--hyper-config', type=str, dest='hyper_config_file',
-                        default='../config/hp_config.json',
-                        help='Directory for the hyper parameter config file (default: %(default)s)')
-
-    parser.add_argument('-cc', '--class-config', type=str, dest='class_config_file',
-                        default='../config/class_config.json',
-                        help='Directory for the class config file (default: %(default)s)')
-
-    parser.add_argument('-l', '--label-file', type=str, dest='label_file',
-                        default='',
-                        help='Directory for the label file (default: %(default)s)')
-
-    parser.add_argument('-md', '--model-dir', type=str, dest='model_dir',
-                        default='',
-                        help='Directory for the model files (default: %(default)s)')
-
-    args = parser.parse_args()
-    label_file = args.label_file
-    data_dir = args.data_dir
-
-    f = open(args.class_config_file)
+    f = open(class_config)
     data = json.load(f)
     f.close()
 
@@ -90,14 +99,14 @@ if __name__ == "__main__":
     for i, data_class in enumerate(data_classes):
         class_list[data_class] = i
 
-    hyper_parameter_list = HyperParameterList(config_file_name=args.hyper_config_file)
+    hyper_parameter_list = HyperParameterList(config_file_name=hyper_config)
 
-    print("Search by rule: " + args.model_dir)
-    model_dir_list = glob.glob(args.model_dir)
-    print("Found " + str(len(model_dir_list)) + " files")
+    log.info("Search by rule: " + model_dir)
+    model_dir_list = glob.glob(model_dir)
+    log.info("Found " + str(len(model_dir_list)) + " files")
 
     for model_filename in model_dir_list:
-        print("Load " + model_filename)
+        log.info("Load " + model_filename)
         p = Path(model_filename)
         parent = p.parent
         directory = parent.name
@@ -106,16 +115,16 @@ if __name__ == "__main__":
 
         iteration_no = int(directory.split("_")[-1])
 
-        print('--- Testing trial: %s' % iteration_no)
+        log.info('--- Testing trial: %s' % iteration_no)
         hparam_values = hyper_parameter_list.get_values(iteration_no=iteration_no)
-        print(hparam_values)
+        log.info(hparam_values)
 
         label_parser_key = hparam_values['label_parser']
 
         if ":" not in label_parser_key:
             raise ValueError('Please provide the parser in the following format: path.to.parser_file.py:ParserClass')
 
-        print(f'Using custom external parser: {label_parser_key}')
+        log.info(f'Using custom external parser: {label_parser_key}')
         path, class_name = label_parser_key.split(':')
         module_name = os.path.splitext(os.path.basename(path))[0]
         dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -127,16 +136,16 @@ if __name__ == "__main__":
 
         parser = parser_class(file_path=label_file)
         _, devel_data, test_data = parser.parse_labels()
-        print("Successfully parsed labels: " + label_file)
+        log.info("Successfully parsed labels: " + label_file)
         model = tf.keras.models.load_model(model_filename,
                                            custom_objects={'AugmentableModel': AugmentableModel, 'ARelu': ARelu},
                                            compile=False)
-        print("Successfully loaded model: " + model_filename)
+        log.info("Successfully loaded model: " + model_filename)
 
         dataset_list = ["devel", "test"]
 
         for dataset_name in dataset_list:
-            print("===== Dataset Partition: " + dataset_name)
+            log.info("===== Dataset Partition: " + dataset_name)
             data_raw = []
             if dataset_name == 'devel':
                 data_raw = devel_data  # [:10]
@@ -165,19 +174,19 @@ if __name__ == "__main__":
             true_categories = tf.argmax(true_categories, axis=1)
             true_np = true_categories.numpy()
             cm = tf.math.confusion_matrix(true_categories, X_pred)
-            print("Confusion Matrix (chunks):")
-            print(cm.numpy())
+            log.info("Confusion Matrix (chunks):")
+            log.info(cm.numpy())
 
             target_names = []
             for data_class in data_classes:
                 target_names.append(data_class)
 
-            print(classification_report(y_true=true_categories.numpy(), y_pred=X_pred_ny,
+            log.info(classification_report(y_true=true_categories.numpy(), y_pred=X_pred_ny,
                                         target_names=target_names,
                                         digits=4))
 
             recall = recall_score(y_true=true_categories.numpy(), y_pred=X_pred_ny, average='macro')
-            print("UAR: " + str(recall * 100))
+            log.info("UAR: " + str(recall * 100))
 
             json_cm_dir = os.path.join(dataset_result_dir, dataset_name + ".chunks.metrics.json")
             with open(json_cm_dir, 'w') as f:
@@ -209,15 +218,15 @@ if __name__ == "__main__":
             # data_raw_labels['label'] = data_raw_labels['label'].apply(lambda x: class_list[x])
             grouped_true = data_raw_labels.values[..., 1].tolist()
             cm = confusion_matrix(grouped_true, grouped_X_pred)
-            print("Confusion Matrix (grouped):")
-            print(cm)
+            log.info("Confusion Matrix (grouped):")
+            log.info(cm)
 
-            print(classification_report(y_true=grouped_true, y_pred=grouped_X_pred,
+            log.info(classification_report(y_true=grouped_true, y_pred=grouped_X_pred,
                                         target_names=target_names,
                                         digits=4))
 
             recall = recall_score(y_true=grouped_true, y_pred=grouped_X_pred, average='macro')
-            print("UAR: " + str(recall * 100))
+            log.info("UAR: " + str(recall * 100))
 
             json_cm_dir = os.path.join(dataset_result_dir, dataset_name + ".grouped.metrics.json")
             with open(json_cm_dir, 'w') as f:

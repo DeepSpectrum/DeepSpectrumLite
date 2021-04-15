@@ -22,16 +22,25 @@ DeepSpectrumLite is built upon TensorFlow Lite which is a specialised version of
 However, TensorFlow Lite does not support all basic TensorFlow functions for audio signal processing and plot image generation. DeepSpectrumLite offers implementations for unsupported functions.
 
 # Installation
-
-## Unix systems (plain python)
-Create a virtual environment:
+You can install DeepSpectrumLite from PiPy.
 ```bash
-python -m venv ./venv #create new python3 environment
-source ./venv/bin/activate
-pip install -r requirements.txt
+pip install deepspectrumlite
 ```
-## Systems with Conda
-If you have conda installed, you can create and install a environment from the included "environment.yml".
+Alternatively, you can clone this repository and install it from there:
+```bash
+git clone https://github.com/DeepSpectrum/DeepSpectrumLite.git
+cd DeepSpectrumLite
+```
+
+## Virtual environment
+We highly recommend you to create a virtual environment:
+```bash
+python -m venv ./venv
+source ./venv/bin/activate
+pip install .
+```
+## Conda environment
+If you have Conda installed, you can create and install a environment from the included "environment.yml".
 ```bash
 conda env create -f environment.yml
 conda activate ./env
@@ -45,7 +54,7 @@ DeepSpectrumLite uses TensorFlow 2.4.0. GPU support should be automatically avai
 ## Training
 To train a model use the following command and pass the path to your data directory (structured as above):
 ```bash
-python -m cli.train -d [path/to/data] -md [save/models/to] -hc [path/to/hyperparameter_config.json] -cc [path/to/class_config.json] -l [path/to/labels.csv]
+deepspectrumlite train -d [path/to/data] -md [save/models/to] -hc [path/to/hyperparameter_config.json] -cc [path/to/class_config.json] -l [path/to/labels.csv]
 ```
 
 For a full rundown of all commandline arguments, call `python -m cli.train --help`.
@@ -54,7 +63,7 @@ Other training parameters including label parser file, problem definition, audio
 ## Test
 If you want to test your .h5 model against a specific audio .wav file, you can call `cli.test`:
 ```bash
-python -m cli.test -d [path/to/model.h5] -t [path/to/test.wav] -hc [path/to/hyperparameter_config.json] -cc [path/to/class_config.json]
+deepspectrumlite predict -md [path/to/model.h5] -d [path/to/*.wav] -hc [path/to/hyperparameter_config.json] -cc [path/to/class_config.json]
 ```
 
 ### Slurm Job Array
@@ -73,20 +82,20 @@ Each job array `i` trains the i'th combination of your grid. If you have a grid 
 #SBATCH --cpus-per-task=2
 #SBATCH --array=0-23
 
-python3 -m cli.train
+deepspectrumlite train
 ```
 This script will create 24 independent training instances where job 0 trains the first combination, job 1 trains the second combination etc. 
 
 ## Statistics about a model
 If you want to check out the parameter quantity and FLOPS your .h5 model you can call `cli.stats`:
 ```bash
-python -m cli.stats -d [path/to/model.h5] -hc [path/to/hyperparameter_config.json]
+deepspectrumlite stats -d [path/to/model.h5] -hc [path/to/hyperparameter_config.json]
 ```
 
 ## Convert .h5 to .tflite
 If you want to convert your trained model to TensorFlow Lite, use `cli.convert`:
 ```bash
-python -m cli.convert [path/to/model.h5] [path/to/target/model.tflite] -hc [path/to/hyperparameter_config.json] -cc [path/to/class_config.json]
+deepspectrumlite convert -s [path/to/model.h5] -d [path/to/target/model.tflite]
 ```
 
 ## Configuration

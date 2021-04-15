@@ -16,30 +16,17 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # ==============================================================================
-'''
-Calculates parameters and FLOPS of a h5 model
-
-Arguments:
-    -d File of .h5 model
-'''
+import logging
+import click
 import os
-
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # print only error messages
-os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 import tensorflow as tf
-
-tf.compat.v1.enable_eager_execution()
-tf.config.run_functions_eagerly(True)
+from .utils import add_options
 import numpy as np
 import argparse
 import time
 import h5py
 import sys
 from deepspectrumlite import AugmentableModel, ARelu
-
-
-def print_version():
-    print(tf.version.GIT_VERSION, tf.version.VERSION)
 
 
 def get_detailed_stats(model_h5_path):
@@ -84,23 +71,34 @@ def get_detailed_stats(model_h5_path):
             # print(json_export)
     tf.compat.v1.reset_default_graph()
 
+from os.path import join, dirname, realpath
 
-if __name__ == "__main__":
+log = logging.getLogger(__name__)
 
-    print_version()
+_DESCRIPTION = 'Test a TensorFlowLite model and retrieve statistics about it.'
 
-    parser = argparse.ArgumentParser()
+@add_options(
+[
+    click.option(
+        "-md",
+        "--model-dir",
+        type=click.Path(exists=False, writable=True),
+        help="Directory for all training output (logs and final model files).",
+        required=True
+    )
+]
+)
 
-    parser.add_argument('-d', '--model-dir', type=str, dest='model_dir',
-                        default='/Users/tobias/PycharmProjects/liteAudioNets-huawei/LiteAudioNets/cli/converted_model.tflite',
-                        help='Directory of model (default: %(default)s)')
-    args = parser.parse_args()
+@click.command(help=_DESCRIPTION)
+def tflite_stats(model_dir, **kwargs):
+    tf.compat.v1.enable_eager_execution()
+    tf.config.run_functions_eagerly(True)
 
     # reset seed values
     np.random.seed(0)
     tf.compat.v1.set_random_seed(0)
 
-    interpreter = tf.lite.Interpreter(model_path=args.model_dir)
+    interpreter = tf.lite.Interpreter(model_path=model_dir)
     input_details = interpreter.get_input_details()
     output_details = interpreter.get_output_details()
     all_layers_details = interpreter.get_tensor_details()
@@ -126,7 +124,6 @@ if __name__ == "__main__":
 
     f.close()
     print(parameters)
-    sys.exit()
 
     # interpreter.set_tensor(input_details[0]['index'], tf.convert_to_tensor(np.expand_dims(audio_data, 0), dtype=tf.float32))
 

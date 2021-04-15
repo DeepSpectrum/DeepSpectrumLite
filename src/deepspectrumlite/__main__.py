@@ -28,6 +28,12 @@ import logging.config
 import pkg_resources
 
 from deepspectrumlite.cli.train import train
+from deepspectrumlite.cli.devel_test import devel_test
+from deepspectrumlite.cli.stats import stats
+from deepspectrumlite.cli.tflite_stats import tflite_stats
+from deepspectrumlite.cli.create_preprocessor import create_preprocessor
+from deepspectrumlite.cli.convert import convert
+from deepspectrumlite.cli.predict import predict
 from deepspectrumlite.cli.utils import add_options
 from deepspectrumlite import __version__ as VERSION
 
@@ -48,9 +54,9 @@ version_str = f"DeepSpectrumLite %(version)s\nCopyright (C) 2020-2021 Shahin Ami
 @add_options(_global_options)
 @click.version_option(VERSION, message=version_str)
 def cli(verbose):
-    click.echo('Verbosity: %s' % verbose)
     log_levels = ['ERROR', 'INFO', 'DEBUG']
     verbose = min(2, verbose)
+    click.echo('Verbosity: %s' % log_levels[verbose])
     logging.config.dictConfig({
         'version': 1,
         'disable_existing_loggers': False,  # this fixes the problem
@@ -75,5 +81,16 @@ def cli(verbose):
         }
     })
 
+    os.environ['GLOG_minloglevel'] = '2'
+    os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 cli.add_command(train)
+cli.add_command(devel_test)
+cli.add_command(stats)
+cli.add_command(convert)
+cli.add_command(tflite_stats)
+cli.add_command(create_preprocessor)
+cli.add_command(predict)
+
+if __name__ == '__main__':
+    cli()

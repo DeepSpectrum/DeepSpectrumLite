@@ -30,23 +30,21 @@ log = logging.getLogger(__name__)
 
 _DESCRIPTION = 'Train a DeepSpectrumLite transer learning model.'
 
-environ['GLOG_minloglevel'] = '2'
-environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-
-@click.command(help=_DESCRIPTION)
 @add_options(
 [
     click.option(
         "-d",
         "--data-dir",
-        help="Directory of data class categories containing folders of each data class."
+        type=click.Path(exists=True),
+        help="Directory of data class categories containing folders of each data class.",
+        required=True
     ),
     click.option(
         "-md",
         "--model-dir",
-        type=click.Path(exists=True, writable=True),
+        type=click.Path(exists=False, writable=True),
         help="Directory for all training output (logs and final model files).",
-        default="experiment", show_default=True
+        required=True
     ),
     click.option(
         "-hc",
@@ -66,7 +64,8 @@ environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
         "-l",
         "--label-file",
         type=click.Path(exists=True, writable=False, readable=True),
-        help="Directory for the label file."
+        help="Directory for the label file.",
+        required=True
     ),
     click.option(
         "-dc",
@@ -77,6 +76,7 @@ environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 ]
 )
 
+@click.command(help=_DESCRIPTION)
 def train(model_dir, data_dir, class_config, hyper_config, label_file, disable_cache, **kwargs):
     import tensorflow as tf
     # tf.compat.v1.enable_eager_execution()
@@ -89,6 +89,7 @@ def train(model_dir, data_dir, class_config, hyper_config, label_file, disable_c
     import math
 
     enable_cache = not disable_cache
+    data_dir = os.path.join(data_dir, '') # add trailing slash
 
     f = open(class_config)
     data = json.load(f)
@@ -101,16 +102,16 @@ def train(model_dir, data_dir, class_config, hyper_config, label_file, disable_c
 
     tensorboard_initialised = False
 
-    print("Physical devices:")
+    log.debug("Physical devices:")
     physical_devices = tf.config.experimental.list_physical_devices('GPU')
-    print(physical_devices)
+    log.debug(physical_devices)
     del physical_devices
 
     hyper_parameter_list = HyperParameterList(config_file_name=hyper_config)
 
     max_iterations = hyper_parameter_list.get_max_iteration()
-    print("Loaded hyperparameter configuration.")
-    print("Recognised combinations of settings: " + str(max_iterations) + "")
+    log.debug('Loaded hyperparameter configuration.')
+    log.debug("Recognised combinations of settings: " + str(max_iterations) + "")
 
     slurm_jobid = os.getenv('SLURM_ARRAY_TASK_ID')
 
@@ -158,7 +159,7 @@ def train(model_dir, data_dir, class_config, hyper_config, label_file, disable_c
         if ":" not in label_parser_key:
             raise ValueError('Please provide the parser in the following format: path.to.parser_file.py:ParserClass')
 
-        print(f'Using custom external parser: {label_parser_key}')
+        log.debug(f'Using custom external parser: {label_parser_key}')
         path, class_name = label_parser_key.split(':')
         module_name = os.path.splitext(os.path.basename(path))[0]
         dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -175,10 +176,10 @@ def train(model_dir, data_dir, class_config, hyper_config, label_file, disable_c
         np.random.seed(0)
         tf.compat.v1.set_random_seed(0)
 
-        print('--- Starting trial: %s' % run_identifier)
-        print({h.name: hparam_values_tensorboard[h] for h in hparam_values_tensorboard})
+        log.info('--- Starting trial: %s' % run_identifier)
+        log.info({h.name: hparam_values_tensorboard[h] for h in hparam_values_tensorboard})
 
-        print("Load data pipeline ...")
+        log.debug("Load data pipeline ...")
 
         ########### TRAIN DATA ###########
         train_data_pipeline = DataPipeline(name='train_data_set', data_classes=data_classes,
@@ -206,8 +207,8 @@ def train(model_dir, data_dir, class_config, hyper_config, label_file, disable_c
         test_data_pipeline.set_filename_prepend(prepend_filename_str=data_dir)
         test_dataset = test_data_pipeline.pipeline(cache=enable_cache, shuffle=False, drop_remainder=False)
 
-        print("All data pipelines have been successfully loaded.")
-        print("Caching in memory is: " + str(enable_cache))
+        log.info("All data pipelines have been successfully loaded.")
+        log.debug("Caching in memory is: " + str(enable_cache))
 
         model_name = hparam_values['model_name']
 

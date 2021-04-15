@@ -14,5 +14,5 @@ Published under GPLv3, please see the `LICENSE` file for details.
 Please direct any questions or requests to Shahin Amiriparian (shahin.amiriparian at informatik.uni-augsburg.de) or Tobias Hübner (tobias.huebner at informatik.uni-augsburg.de).
 
 # Why DeepSpectrumLite?
-DeepSpectrumLite is built apon TensorFlow Lite which is a specialised version of TensorFlow that supports embedded decvies.
+DeepSpectrumLite is built upon TensorFlow Lite which is a specialised version of TensorFlow that supports embedded decvies.
 However, TensorFlow Lite does not support all basic TensorFlow functions for audio signal processing and plot image generation. DeepSpectrumLite offers implementations for unsupported functions.

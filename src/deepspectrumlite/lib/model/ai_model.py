@@ -258,7 +258,7 @@ class Model:
             tf.keras.Model current model
 
         """
-        return Model.model
+        return self.model
 
     def save_tl_lite_model(self, save_dir: str, model_name: str):
         """

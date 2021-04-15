@@ -16,26 +16,13 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # ==============================================================================
-'''
-Calculates parameters and FLOPS of a h5 model
-
-Arguments:
-    -d File of .h5 model
-'''
+import logging
+import click
+from .utils import add_options
 import os
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # print only error messages
-os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 import tensorflow as tf
-tf.compat.v1.enable_eager_execution()
-tf.config.run_functions_eagerly(True)
 import numpy as np
-import argparse
 from deepspectrumlite import AugmentableModel, ARelu
-
-
-def print_version():
-    print(tf.version.GIT_VERSION, tf.version.VERSION)
-
 
 def get_detailed_stats(model_h5_path):
     session = tf.compat.v1.Session()
@@ -101,21 +88,32 @@ def get_flops(model_h5_path):
     tf.compat.v1.reset_default_graph()
     return flops.total_float_ops
 
-if __name__ == "__main__":
+from os.path import join, dirname, realpath
 
-    print_version()
+log = logging.getLogger(__name__)
 
-    parser = argparse.ArgumentParser()
+_DESCRIPTION = 'Retrieve statistics of a DeepSpectrumLite transer learning model.'
 
-    parser.add_argument('-d', '--model-dir', type=str, dest='model_dir',
-                        default=None,
-                        help='Directory of model (default: %(default)s)')
-    args = parser.parse_args()
+@add_options(
+[
+    click.option(
+        "-md",
+        "--model-dir",
+        type=click.Path(exists=False, writable=True),
+        help="Directory of a DeepSpectrumLite Model.",
+        required=True
+    )
+]
+)
 
+@click.command(help=_DESCRIPTION)
+def stats(model_dir, **kwargs):
+    tf.compat.v1.enable_eager_execution()
+    tf.config.run_functions_eagerly(True)
     # reset seed values
     np.random.seed(0)
     tf.compat.v1.set_random_seed(0)
 
-    new_model = tf.keras.models.load_model(args.model_dir, custom_objects={'AugmentableModel': AugmentableModel, 'ARelu': ARelu}, compile=False)
+    new_model = tf.keras.models.load_model(model_dir, custom_objects={'AugmentableModel': AugmentableModel, 'ARelu': ARelu}, compile=False)
     new_model.summary()
-    get_detailed_stats(args.model_dir)
+    get_detailed_stats(model_dir)
