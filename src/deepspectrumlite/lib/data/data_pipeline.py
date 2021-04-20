@@ -266,7 +266,7 @@ class DataPipeline:
             self.preprocess()
 
         # batch size used for computing spectrograms (speed acceleration)
-        preprocessing_batch_size = 128
+        preprocessing_batch_size = self._batch_size*2
 
         dataset = tf.data.Dataset.from_tensor_slices((self.get_filenames(), self.get_labels()))
 

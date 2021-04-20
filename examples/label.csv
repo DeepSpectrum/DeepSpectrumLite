@@ -1,0 +1,7 @@
+filename,label,duration_frames
+train_seagull.wav,seagull,117249
+train_dog.wav,dog,87865
+devel_seagull.wav,seagull,117249
+devel_dog.wav,dog,87865
+test_seagull.wav,seagull,117249
+test_dog.wav,dog,87865

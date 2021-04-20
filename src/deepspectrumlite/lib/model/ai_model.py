@@ -231,7 +231,7 @@ class Model:
 
             precision, recall, fbeta_score, support = precision_recall_fscore_support(y_true=true_categories.numpy(),
                                                                                       y_pred=X_pred.numpy(),
-                                                                                      average='macro')
+                                                                                      average='macro', zero_division=0)
             if self.verbose:
                 print("Confusion matrix:\n\n", cm)
                 target_names = []
@@ -240,7 +240,7 @@ class Model:
 
                 print(classification_report(y_true=true_categories.numpy(), y_pred=X_pred.numpy(),
                                             target_names=target_names,
-                                            digits=4))
+                                            digits=4, zero_division=0))
                 print(f"precision: {precision:.3%} recall: {recall:.3%} fbeta_score: {fbeta_score:.3%}", precision,
                       recall,
                       fbeta_score)

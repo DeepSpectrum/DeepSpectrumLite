@@ -57,29 +57,14 @@ def cli(verbose):
     log_levels = ['ERROR', 'INFO', 'DEBUG']
     verbose = min(2, verbose)
     click.echo('Verbosity: %s' % log_levels[verbose])
-    logging.config.dictConfig({
-        'version': 1,
-        'disable_existing_loggers': False,  # this fixes the problem
-        'formatters': {
-            'standard': {
-                'format': '%(asctime)s [%(levelname)s] %(name)s: %(message)s'
-            },
-        },
-        'handlers': {
-            'default': {
-                'level': log_levels[verbose],
-                'class': 'logging.StreamHandler',
-                'formatter': 'standard'
-            },
-        },
-        'loggers': {
-            '': {
-                'handlers': ['default'],
-                'level': log_levels[verbose],
-                'propagate': True
-            }
-        }
-    })
+
+    if log_levels == 2:
+        level = logging.DEBUG
+    elif log_levels == 1:
+        level = logging.INFO
+    else:
+        level = logging.ERROR
+    logging.basicConfig(level=level)
 
     os.environ['GLOG_minloglevel'] = '2'
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
@@ -92,5 +77,5 @@ cli.add_command(tflite_stats)
 cli.add_command(create_preprocessor)
 cli.add_command(predict)
 
-if __name__ == '__main__':
-    cli()
+# if __name__ == '__main__':
+#     cli()
