@@ -29,7 +29,9 @@ from tensorflow.python.keras.metrics import categorical_accuracy
 from deepspectrumlite import HyperParameterList
 from .modules.arelu import ARelu
 from .config import gridsearch
+import logging
 
+log = logging.getLogger(__name__)
 
 class Model:
     model: tf.keras.Model = None
@@ -40,8 +42,7 @@ class Model:
                  data_classes,
                  run_id: int,
                  run_dir: str = None,
-                 use_ram: bool = True,
-                 verbose: bool = True
+                 use_ram: bool = True
                  ):
         """
         Abstract model implementation
@@ -55,15 +56,13 @@ class Model:
             use_ram: bool (optional)
                 If enabled, the whole train data set will be saved in memory.
                 Otherwise only the current batch will be loaded to memory. Default: True
-            verbose: bool (optional)
-                If enabled, the current progress will be printed to stdout
         """
         self._run_id = run_id
         self.hy_params = hy_params.get_values(iteration_no=self._run_id)
         self.hy_params_tb = hy_params.get_values_tensorboard(iteration_no=self._run_id)
         self.use_ram = use_ram
         self.input_shape = input_shape
-        self.verbose = verbose
+        self.verbose = 0
         self.confusion_matrix = None
         self.run_dir = run_dir
         self.data_classes = data_classes
@@ -99,7 +98,7 @@ class Model:
                              batch_size=self.hy_params['batch_size'],
                              shuffle=True,
                              validation_data=devel_dataset,
-                             callbacks=self.get_callbacks())
+                             callbacks=self.get_callbacks(), verbose=0)
 
     '''
     def test_grouped(self, test_data_grouped):
@@ -218,7 +217,7 @@ class Model:
         """
         results = self.get_model().evaluate(x=test_dataset,
                                             batch_size=self.hy_params['batch_size'],
-                                            verbose=self.verbose)
+                                            verbose=0)
 
         if self.prediction_type == 'categorical':
             X_pred = self.get_model().predict(x=test_dataset)
@@ -232,18 +231,17 @@ class Model:
             precision, recall, fbeta_score, support = precision_recall_fscore_support(y_true=true_categories.numpy(),
                                                                                       y_pred=X_pred.numpy(),
                                                                                       average='macro', zero_division=0)
-            if self.verbose:
-                print("Confusion matrix:\n\n", cm)
-                target_names = []
-                for data_class in self.data_classes:
-                    target_names.append(data_class)
 
-                print(classification_report(y_true=true_categories.numpy(), y_pred=X_pred.numpy(),
-                                            target_names=target_names,
-                                            digits=4, zero_division=0))
-                print(f"precision: {precision:.3%} recall: {recall:.3%} fbeta_score: {fbeta_score:.3%}", precision,
-                      recall,
-                      fbeta_score)
+            log.info("Confusion matrix:")
+            log.info(cm)
+            target_names = []
+            for data_class in self.data_classes:
+                target_names.append(data_class)
+
+            log.info("\n" + classification_report(y_true=true_categories.numpy(), y_pred=X_pred.numpy(),
+                                        target_names=target_names,
+                                        digits=4, zero_division=0))
+            log.info(f"precision: %.5f recall: %.5f fbeta_score: %.5f", precision, recall, fbeta_score)
 
             accuracy = results[2]
             return accuracy, precision, recall, fbeta_score
@@ -280,8 +278,7 @@ class Model:
         tflite_quant_model = converter.convert()
         open(save_dir + model_name + ".tflite", "wb").write(tflite_quant_model)
 
-        if self.verbose:
-            print("Model was saved as tflite as " + save_dir + model_name)
+        log.info("Model was saved as tflite as " + save_dir + model_name)
 
         interpreter = tf.lite.Interpreter(model_content=tflite_quant_model)
 
@@ -298,17 +295,15 @@ class Model:
 
         # Test model on random input data.
         input_shape = input_details[0]['shape']
-        if self.verbose:
-            print("input shape: ", input_shape)
-            print("output shape: ", output_details[0]['shape'])
+        log.info("input shape: ", input_shape)
+        log.info("output shape: ", output_details[0]['shape'])
         input_data = np.array(np.random.random_sample(input_shape), dtype=np.float32)
         interpreter.set_tensor(input_details[0]['index'], input_data)
 
         interpreter.invoke()
         output_data = interpreter.get_tensor(output_details[0]['index'])
 
-        if self.verbose:
-            print(output_data)
+        log.info(output_data)
 
     def save_model_saved_model(self, save_dir: str):
         """
@@ -327,8 +322,7 @@ class Model:
 
     def save_keras_model(self, save_dir: str, filename: str):
         self.get_model().save(save_dir + filename)
-        if self.verbose:
-            print("Model was saved in " + save_dir + filename)
+        log.info("Model was saved in " + save_dir + filename)
 
     def create_model(self):
         """
@@ -364,8 +358,7 @@ class Model:
         self.get_model().compile(optimizer=self.get_optimizer_fn(), loss=self.hy_params['loss'],
                                  metrics=self._metrics)
 
-        if self.verbose:
-            self.get_model().summary()
+        self.get_model().summary(print_fn=log.info)
 
     def run(self, train_dataset: tf.data.Dataset, test_dataset: tf.data.Dataset,
             devel_dataset: tf.data.Dataset, save_dir: str, save_model: bool = False):
@@ -396,13 +389,12 @@ class Model:
             self.create_model()
             self.train(train_dataset, devel_dataset)
 
-            if self.verbose:
-                print("Training finished")
+
+            log.info("Training finished")
             if save_model:
                 self.save_model_saved_model(
                     save_dir=save_dir)
-                if self.verbose:
-                    print("Model saved to " + save_dir)
+                log.info("Model saved to " + save_dir)
             '''
             if grouped_test:
                 accuracy, precision, recall, f1_score = self.test_grouped(test_data)

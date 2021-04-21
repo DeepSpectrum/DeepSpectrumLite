@@ -46,7 +46,7 @@ _DESCRIPTION = 'Converts a DeepSpectrumLite model to a TFLite model file.'
     click.option(
         "-d",
         "--destination",
-        type=click.Path(exists=True, writable=False, readable=True),
+        type=click.Path(exists=False, writable=True, readable=True),
         help="Destination TFLite model file",
         required=True
     )
@@ -88,12 +88,14 @@ def convert(source, destination, **kwargs):
 
     # Test model on random input data.
     input_shape = input_details[0]['shape']
-    log.debug("input shape: ", input_shape)
-    log.debug("output shape: ", output_details[0]['shape'])
+    log.info("input shape: ")
+    log.info(input_shape)
+    log.info("output shape: ",)
+    log.info(output_details[0]['shape'])
     input_data = np.array(np.random.random_sample(input_shape), dtype=np.float32)
     interpreter.set_tensor(input_details[0]['index'], input_data)
 
     interpreter.invoke()
     output_data = interpreter.get_tensor(output_details[0]['index'])
 
-    log.debug(output_data)
+    log.info(output_data)

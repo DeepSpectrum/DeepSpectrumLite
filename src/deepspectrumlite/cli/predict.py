@@ -57,8 +57,8 @@ _DESCRIPTION = 'Predict a file using an existing DeepSpectrumLite transer learni
     click.option(
         "-md",
         "--model-dir",
-        type=click.Path(exists=False, writable=True),
-        help="HD5 directory of the DeepSpectrumLite model",
+        type=click.Path(exists=True, writable=False),
+        help="HD5 file of the DeepSpectrumLite model",
         required=True
     ),
     click.option(
@@ -84,12 +84,16 @@ def predict(model_dir, data_dir, class_config, hyper_config, **kwargs):
     data = json.load(f)
     f.close()
 
+    data_dir = os.path.join(data_dir, '')
+
     data_classes = data
     wav_files = sorted(glob.glob(f'{data_dir}/**/*.wav', recursive=True))
     filenames, labels, duration_frames = list(map(lambda x: os.path.relpath(x, start=data_dir), wav_files)), [list(data_classes.keys())[0]]*len(wav_files), []
     for fn in filenames:
         y, sr = librosa.load(os.path.join(data_dir, fn), sr=None)
         duration_frames.append(y.shape[0])
+
+    log.info('Found %d wav files' % len(filenames))
 
     if data_classes is None:
         raise ValueError('no data classes defined')
@@ -117,8 +121,12 @@ def predict(model_dir, data_dir, class_config, hyper_config, **kwargs):
         log.info(hparam_values)
 
         test_data = pd.DataFrame({'filename': filenames, 'label': labels, 'duration_frames': duration_frames})
-        
-        model = tf.keras.models.load_model(model_filename, custom_objects={'AugmentableModel': AugmentableModel, 'ARelu': ARelu}, compile=False)
+
+        print("Loading model: " + model_filename)
+        model = tf.keras.models.load_model(model_filename,
+                                           custom_objects={'AugmentableModel': AugmentableModel, 'ARelu': ARelu},
+                                           compile=False)
+        model.set_hyper_parameters(hparam_values)
         log.info("Successfully loaded model: " + model_filename)
 
         data_raw = test_data # [:10]
@@ -156,6 +164,8 @@ def predict(model_dir, data_dir, class_config, hyper_config, **kwargs):
         df['prediction'] = list(map(lambda x: target_names[x], X_pred))
 
         df.to_csv(os.path.join(dataset_result_dir, dataset_name+".chunks.predictions.csv"), index=False)
+
+        log.info("Finished testing")
 
 
 

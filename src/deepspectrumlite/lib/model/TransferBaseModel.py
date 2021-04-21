@@ -19,11 +19,12 @@
 from tensorflow import keras
 import tensorflow as tf
 from tensorflow.python.keras.metrics import categorical_accuracy
-
 from deepspectrumlite import Model
 from .modules.augmentable_model import AugmentableModel
 from .modules.squeeze_net import SqueezeNet
+import logging
 
+log = logging.getLogger(__name__)
 
 class TransferBaseModel(Model):
     base_model = None
@@ -43,8 +44,7 @@ class TransferBaseModel(Model):
             self.get_model().compile(loss=keras.losses.categorical_crossentropy, optimizer=optimizer,
                                      metrics=self._metrics)
 
-        if self.verbose:
-            self.get_model().summary()
+        self.get_model().summary(print_fn=log.info)
 
     def create_model(self):
         hy_params = self.hy_params
@@ -110,8 +110,8 @@ class TransferBaseModel(Model):
             activation = hy_params['output_activation']
         predictions = tf.keras.layers.Dense(len(self.data_classes), activation=activation)(dropout_1)
 
-        model = AugmentableModel(inputs=input, outputs=predictions, hy_params=hy_params, name=hy_params['basemodel_name'])
-
+        model = AugmentableModel(inputs=input, outputs=predictions, name=hy_params['basemodel_name'])
+        model.set_hyper_parameters(hy_params=hy_params)
         self.model = model
         self.compile_model()
 
@@ -127,7 +127,7 @@ class TransferBaseModel(Model):
                                        batch_size=self.hy_params['batch_size'],
                                        shuffle=True,
                                        validation_data=devel_dataset,
-                                       callbacks=self.get_callbacks())
+                                       callbacks=self.get_callbacks(), verbose=0)
 
         if self.hy_params['weights'] != '' and self.hy_params['finetune_layer'] > 0:
             self.retrain_model()
@@ -137,4 +137,4 @@ class TransferBaseModel(Model):
                                  batch_size=self.hy_params['batch_size'],
                                  shuffle=True,
                                  validation_data=devel_dataset,
-                                 callbacks=self.get_callbacks())
+                                 callbacks=self.get_callbacks(), verbose=0)

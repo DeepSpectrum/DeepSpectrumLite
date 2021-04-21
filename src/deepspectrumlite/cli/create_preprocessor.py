@@ -71,8 +71,8 @@ def create_preprocessor(hyper_config, **kwargs):
     interpreter = tf.lite.Interpreter(model_path="preprocessor_model.tflite")
     input_details = interpreter.get_input_details()
     output_details = interpreter.get_output_details()
-    log.debug(input_details)
-    log.debug(output_details)
+    log.info(input_details)
+    log.info(output_details)
 
     interpreter.allocate_tensors()
 
@@ -84,8 +84,8 @@ def create_preprocessor(hyper_config, **kwargs):
 
     # Test model on random input data.
     input_shape = input_details[0]['shape']
-    log.debug("input shape: ", input_shape)
-    log.debug("output shape: ", output_details[0]['shape'])
+    log.info("input shape: ", input_shape)
+    log.info("output shape: ", output_details[0]['shape'])
     input_data = np.array(np.random.random_sample(input_shape), dtype=np.float32)
     interpreter.set_tensor(input_details[0]['index'], input_data)
     start_time = time.time()
@@ -93,8 +93,8 @@ def create_preprocessor(hyper_config, **kwargs):
     stop_time = time.time()
     output_data = interpreter.get_tensor(output_details[0]['index'])
 
-    log.debug(output_data)
-    log.debug('time: {:.3f}ms'.format((stop_time - start_time) * 1000))
+    log.info(output_data)
+    log.info('time: {:.3f}ms'.format((stop_time - start_time) * 1000))
     log.info("Finished creating the TFLite preprocessor")
 
 

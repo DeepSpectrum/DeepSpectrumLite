@@ -31,8 +31,15 @@ Hu, Ting-yao et al. "SapAugment: Learning A Sample Adaptive Policy for Data Augm
 '''
 class AugmentableModel(tf.keras.Model):
 
-    def __init__(self, hy_params, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super(AugmentableModel, self).__init__(*args, **kwargs)
+        self.hy_params = {}
+        self._batch_size = None
+        self.lambda_sap = None
+        self._sap_augment_a = None
+        self._sap_augment_s = None
+
+    def set_hyper_parameters(self, hy_params):
         self.hy_params = hy_params
 
         self._batch_size = self.hy_params['batch_size']

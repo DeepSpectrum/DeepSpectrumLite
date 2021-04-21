@@ -102,16 +102,16 @@ def train(model_dir, data_dir, class_config, hyper_config, label_file, disable_c
 
     tensorboard_initialised = False
 
-    log.debug("Physical devices:")
+    log.info("Physical devices:")
     physical_devices = tf.config.experimental.list_physical_devices('GPU')
-    log.debug(physical_devices)
+    log.info(physical_devices)
     del physical_devices
 
     hyper_parameter_list = HyperParameterList(config_file_name=hyper_config)
 
     max_iterations = hyper_parameter_list.get_max_iteration()
-    log.debug('Loaded hyperparameter configuration.')
-    log.debug("Recognised combinations of settings: " + str(max_iterations) + "")
+    log.info('Loaded hyperparameter configuration.')
+    log.info("Recognised combinations of settings: " + str(max_iterations) + "")
 
     slurm_jobid = os.getenv('SLURM_ARRAY_TASK_ID')
 
@@ -159,7 +159,7 @@ def train(model_dir, data_dir, class_config, hyper_config, label_file, disable_c
         if ":" not in label_parser_key:
             raise ValueError('Please provide the parser in the following format: path.to.parser_file.py:ParserClass')
 
-        log.debug(f'Using custom external parser: {label_parser_key}')
+        log.info(f'Using custom external parser: {label_parser_key}')
         path, class_name = label_parser_key.split(':')
         module_name = os.path.splitext(os.path.basename(path))[0]
         dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -179,7 +179,7 @@ def train(model_dir, data_dir, class_config, hyper_config, label_file, disable_c
         log.info('--- Starting trial: %s' % run_identifier)
         log.info({h.name: hparam_values_tensorboard[h] for h in hparam_values_tensorboard})
 
-        log.debug("Load data pipeline ...")
+        log.info("Load data pipeline ...")
 
         ########### TRAIN DATA ###########
         train_data_pipeline = DataPipeline(name='train_data_set', data_classes=data_classes,
@@ -208,7 +208,7 @@ def train(model_dir, data_dir, class_config, hyper_config, label_file, disable_c
         test_dataset = test_data_pipeline.pipeline(cache=enable_cache, shuffle=False, drop_remainder=False)
 
         log.info("All data pipelines have been successfully loaded.")
-        log.debug("Caching in memory is: " + str(enable_cache))
+        log.info("Caching in memory is: " + str(enable_cache))
 
         model_name = hparam_values['model_name']
 

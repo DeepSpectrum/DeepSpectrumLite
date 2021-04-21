@@ -56,7 +56,7 @@ _DESCRIPTION = 'Test a DeepSpectrumLite transer learning model.'
         "-md",
         "--model-dir",
         type=click.Path(exists=False, writable=True),
-        help="Directory for all training output (logs and final model files).",
+        help="Path to HD5 model file",
         required=True
     ),
     click.option(
@@ -89,6 +89,8 @@ def devel_test(model_dir, data_dir, class_config, hyper_config, label_file, **kw
     f = open(class_config)
     data = json.load(f)
     f.close()
+
+    data_dir = os.path.join(data_dir, '')
 
     data_classes = data
 
@@ -140,6 +142,7 @@ def devel_test(model_dir, data_dir, class_config, hyper_config, label_file, **kw
         model = tf.keras.models.load_model(model_filename,
                                            custom_objects={'AugmentableModel': AugmentableModel, 'ARelu': ARelu},
                                            compile=False)
+        model.set_hyper_parameters(hparam_values)
         log.info("Successfully loaded model: " + model_filename)
 
         dataset_list = ["devel", "test"]

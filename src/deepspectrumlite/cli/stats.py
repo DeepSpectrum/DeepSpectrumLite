@@ -22,16 +22,19 @@ from .utils import add_options
 import os
 import tensorflow as tf
 import numpy as np
-from deepspectrumlite import AugmentableModel, ARelu
+from deepspectrumlite import AugmentableModel, ARelu, HyperParameterList
 
 def get_detailed_stats(model_h5_path):
     session = tf.compat.v1.Session()
     graph = tf.compat.v1.get_default_graph()
 
+    parent_dir = dirname(model_h5_path)
+
 
     with graph.as_default():
         with session.as_default():
             new_model = tf.keras.models.load_model(model_h5_path, custom_objects={'AugmentableModel': AugmentableModel, 'ARelu': ARelu}, compile=False)
+            new_model.summary(print_fn=log.info)
             run_meta = tf.compat.v1.RunMetadata()
             input_details = new_model.get_config()
             input_shape = input_details['layers'][0]['config']['batch_input_shape']
@@ -60,7 +63,7 @@ def get_detailed_stats(model_h5_path):
                 cmd='op',
                 options=tf.compat.v1.profiler.ProfileOptionBuilder.time_and_memory())
 
-            text_file = open("profiler.json", "w")
+            text_file = open(os.path.join(parent_dir, "profiler.json"), "w")
             text_file.write(str(json_export))
             text_file.close()
             # print(json_export)
@@ -100,7 +103,7 @@ _DESCRIPTION = 'Retrieve statistics of a DeepSpectrumLite transer learning model
         "-md",
         "--model-dir",
         type=click.Path(exists=False, writable=True),
-        help="Directory of a DeepSpectrumLite Model.",
+        help="Directory of a DeepSpectrumLite HD5 Model.",
         required=True
     )
 ]
@@ -114,6 +117,6 @@ def stats(model_dir, **kwargs):
     np.random.seed(0)
     tf.compat.v1.set_random_seed(0)
 
-    new_model = tf.keras.models.load_model(model_dir, custom_objects={'AugmentableModel': AugmentableModel, 'ARelu': ARelu}, compile=False)
-    new_model.summary()
+    # new_model = tf.keras.models.load_model(model_dir, custom_objects={'AugmentableModel': AugmentableModel, 'ARelu': ARelu}, compile=False)
+    # new_model.summary(print_fn=log.info)
     get_detailed_stats(model_dir)

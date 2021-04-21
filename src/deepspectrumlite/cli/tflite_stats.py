@@ -83,7 +83,7 @@ _DESCRIPTION = 'Test a TensorFlowLite model and retrieve statistics about it.'
         "-md",
         "--model-dir",
         type=click.Path(exists=False, writable=True),
-        help="Directory for all training output (logs and final model files).",
+        help="Path to the TensorFlow Lite model",
         required=True
     )
 ]
@@ -98,6 +98,8 @@ def tflite_stats(model_dir, **kwargs):
     np.random.seed(0)
     tf.compat.v1.set_random_seed(0)
 
+    model_sub_dir = dirname(model_dir)
+
     interpreter = tf.lite.Interpreter(model_path=model_dir)
     input_details = interpreter.get_input_details()
     output_details = interpreter.get_output_details()
@@ -105,7 +107,7 @@ def tflite_stats(model_dir, **kwargs):
 
     interpreter.allocate_tensors()
 
-    f = h5py.File("converted_model_weights_infos.hdf5", "w")
+    f = h5py.File(os.path.join(model_sub_dir, "converted_model_weights_infos.hdf5"), "w")
     parameters = 0
     for layer in all_layers_details:
         # to create a group in an hdf5 file
@@ -123,7 +125,7 @@ def tflite_stats(model_dir, **kwargs):
         grp.create_dataset("weights", data=weights)
 
     f.close()
-    print(parameters)
+    log.info(str(parameters))
 
     # interpreter.set_tensor(input_details[0]['index'], tf.convert_to_tensor(np.expand_dims(audio_data, 0), dtype=tf.float32))
 
@@ -133,17 +135,22 @@ def tflite_stats(model_dir, **kwargs):
 
     # Test model on random input data.
     input_shape = input_details[0]['shape']
-    print("input shape: ", input_shape)
-    print("output shape: ", output_details[0]['shape'])
+    log.info("input shape: ")
+    log.info(input_shape)
+    log.info("output shape: ",)
+    log.info(output_details[0]['shape'])
     input_data = np.array(np.random.random_sample(input_shape), dtype=np.float32)
     interpreter.set_tensor(input_details[0]['index'], input_data)
     start_time = time.time()
     time.sleep(10.0)
-    print("start")
-    while True:
+    log.info("start")
+    i = 50
+    while i > 0:
         interpreter.invoke()
+        i = i - 1
     stop_time = time.time()
     output_data = interpreter.get_tensor(output_details[0]['index'])
 
-    print(output_data)
-    print('time: {:.3f}ms'.format((stop_time - start_time) * 1000))
+    log.info(output_data)
+    log.info('time: {:.3f}ms'.format((stop_time - start_time) * 1000))
+    log.info('mean time: {:.3f}ms'.format((stop_time - start_time) * 1000 / 50))
