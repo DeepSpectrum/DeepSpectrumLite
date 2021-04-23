@@ -66,6 +66,7 @@ def create_preprocessor(hyper_config, destination, **kwargs):
 
     # ATTENTION: antialias is not supported in tflite
     tmp_save_path = os.path.join(working_directory, "preprocessor")
+    os.makedirs(tmp_save_path, exist_ok=True)
     tf.saved_model.save(preprocess, tmp_save_path)
 
     # new_model = preprocess

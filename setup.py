@@ -10,7 +10,7 @@ from setuptools import setup, find_packages
 from subprocess import CalledProcessError, check_output
 
 PROJECT = "DeepSpectrumLite"
-VERSION = "1.0.0"
+VERSION = "1.0.1"
 LICENSE = "GPLv3+"
 AUTHOR = "Tobias Hübner"
 AUTHOR_EMAIL = "tobias.huebner@informatik.uni-augsburg.de"

@@ -133,6 +133,7 @@ def test_tflite_stats():
 
 
 def test_create_preprocessor():
+    tmpdir = temp_dir
     from deepspectrumlite.__main__ import cli
     from click.testing import CliRunner
     from os.path import dirname, join
@@ -144,7 +145,8 @@ def test_create_preprocessor():
     result = runner.invoke(cli,
                            args=[
                                '-vv', 'create-preprocessor',
-                               '-hc', join(examples, 'hp_config.json')
+                               '-hc', join(examples, 'hp_config.json'),
+                               '-d', join(tmpdir, 'output', 'preprocessor.tflite')
                            ],
                            catch_exceptions=False)
     assert result.exit_code == 0, f"Exit code for create_preprocessor is not 0 but " + str(result.exit_code)
@@ -153,5 +155,5 @@ def test_create_preprocessor():
 def pytest_sessionfinish():
     shutil.rmtree(temp_dir)
 
-# if __name__ == '__main__':
-#      print(get_tmp_dir())
+if __name__ == '__main__':
+     print(test_create_preprocessor())
