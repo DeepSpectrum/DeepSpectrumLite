@@ -92,8 +92,10 @@ def create_preprocessor(hyper_config, destination, **kwargs):
 
     # Test model on random input data.
     input_shape = input_details[0]['shape']
-    log.info("input shape: ", input_shape)
-    log.info("output shape: ", output_details[0]['shape'])
+    log.info("input shape:")
+    log.info(input_shape)
+    log.info("output shape:")
+    log.info(output_details[0]['shape'])
     input_data = np.array(np.random.random_sample(input_shape), dtype=np.float32)
     interpreter.set_tensor(input_details[0]['index'], input_data)
     start_time = time.time()
