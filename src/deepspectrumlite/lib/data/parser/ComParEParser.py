@@ -21,13 +21,13 @@ import pandas as pd
 import numpy as np
 
 
-class ComParEParser:
+class ComParEParser: # pragma: no cover
 
-    def __init__(self, file_path: str, delimiter=','):
+    def __init__(self, file_path: str, delimiter=','): # pragma: no cover
         self._file_path = file_path
         self._delimiter = delimiter
 
-    def parse_labels(self):
+    def parse_labels(self): # pragma: no cover
         complete = pd.read_csv(self._file_path, sep=self._delimiter)
         complete.columns = ['filename', 'label', 'duration_frames']
 

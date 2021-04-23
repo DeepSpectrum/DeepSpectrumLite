@@ -8,7 +8,7 @@
     "tb_run_id":        ["inferno_run"],
     "num_units":        [4],
     "dropout":          [0.25],
-    "optimizer":        ["adadelta"],
+    "optimizer":        ["adagrad"],
     "learning_rate":    [0.001],
     "fine_learning_rate": [0.0001],
     "finetune_layer":   [0.7],

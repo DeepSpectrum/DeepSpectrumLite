@@ -5,19 +5,19 @@ import tensorflow as tf
 # @see https://github.com/alesgenova/colormap
 
 
-def linear_scale(domain, out_range, value):
+def linear_scale(domain, out_range, value): # pragma: no cover
     d0, d1 = domain
     r0, r1 = out_range
 
     return r0 + (r1 - r0) * ((value - d0) / (d1 - d0))
 
 
-def linear_mixer(value, lower_node_value, upper_node_value):
+def linear_mixer(value, lower_node_value, upper_node_value): # pragma: no cover
     frac = (value - lower_node_value) / (upper_node_value - lower_node_value)
     return 1. - frac, frac
 
 
-def color_combination(a, X, b, Y):
+def color_combination(a, X, b, Y): # pragma: no cover
     return [
         a * X[0] + b * Y[0],
         a * X[1] + b * Y[1],
@@ -25,7 +25,7 @@ def color_combination(a, X, b, Y):
     ]
 
 
-def create_map_from_array(v, color_map):
+def create_map_from_array(v, color_map): # pragma: no cover
     channel_position = 3
     # rgb:
     v = tf.expand_dims(v, channel_position)  # add channel axis

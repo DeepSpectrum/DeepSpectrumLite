@@ -19,7 +19,7 @@
 import tensorflow as tf
 
 
-def amplitude_to_db(S, amin=1e-16, top_db=80.0):
+def amplitude_to_db(S, amin=1e-16, top_db=80.0): # pragma: no cover
     magnitude = tf.abs(S)
     ref_value = tf.reduce_max(magnitude)
 
@@ -27,7 +27,7 @@ def amplitude_to_db(S, amin=1e-16, top_db=80.0):
     return power_to_db(power, ref=ref_value ** 2, amin=amin ** 2, top_db=top_db)
 
 
-def power_to_db(S, ref=1.0, amin=1e-16, top_db=80.0):
+def power_to_db(S, ref=1.0, amin=1e-16, top_db=80.0): # pragma: no cover
     """Convert a power-spectrogram (magnitude squared) to decibel (dB) units.
     Computes the scaling ``10 * log10(S / max(S))`` in a numerically
     stable way.

@@ -43,32 +43,40 @@ _DESCRIPTION = 'Creates a DeepSpectrumLite preprocessor TFLite file.'
         type=click.Path(exists=True, writable=False, readable=True),
         help="Directory for the hyper parameter config file.",
         default=join(dirname(realpath(__file__)), "config/hp_config.json"), show_default=True
+    ),
+    click.option(
+        "-d",
+        "--destination",
+        type=click.Path(exists=False, writable=True, readable=True),
+        help="Destination of the TFLite preprocessor file",
+        required=True
     )
 ]
 )
 
 @click.command(help=_DESCRIPTION)
-def create_preprocessor(hyper_config, **kwargs):
+def create_preprocessor(hyper_config, destination, **kwargs):
     hyper_parameter_list = HyperParameterList(config_file_name=hyper_config)
     hparam_values = hyper_parameter_list.get_values(iteration_no=0)
+    working_directory = dirname(destination)
+
     preprocess = PreprocessAudio(hparams=hparam_values, name="dsl_audio_preprocessor")
     input = tf.convert_to_tensor(np.array(np.random.random_sample((1, 16000)), dtype=np.float32), dtype=tf.float32)
     result = preprocess.preprocess(input)
-    # print(result)
-    # sys.exit()
+
     # ATTENTION: antialias is not supported in tflite
-    tf.saved_model.save(preprocess, 'preprocessor')
+    tmp_save_path = os.path.join(working_directory, "preprocessor")
+    tf.saved_model.save(preprocess, tmp_save_path)
 
     # new_model = preprocess
-
-    converter = tf.lite.TFLiteConverter.from_saved_model(saved_model_dir='preprocessor')
+    converter = tf.lite.TFLiteConverter.from_saved_model(saved_model_dir=tmp_save_path)
     converter.target_spec.supported_ops = [tf.lite.OpsSet.TFLITE_BUILTINS,
                                            tf.lite.OpsSet.SELECT_TF_OPS]
     converter.experimental_new_converter = True
     tflite_quant_model = converter.convert()
-    open("preprocessor_model.tflite", "wb").write(tflite_quant_model)
+    open(destination, "wb").write(tflite_quant_model)
 
-    interpreter = tf.lite.Interpreter(model_path="preprocessor_model.tflite")
+    interpreter = tf.lite.Interpreter(model_path=destination)
     input_details = interpreter.get_input_details()
     output_details = interpreter.get_output_details()
     log.info(input_details)

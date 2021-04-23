@@ -9,7 +9,6 @@ def get_tmp_dir():
     return os.path.join(subdir, "")
 
 temp_dir = get_tmp_dir()
-# temp_dir = '/Users/tobias/PycharmProjects/DeepSpectrumLite/tmp/'
 
 def test_train():
     tmpdir = temp_dir
@@ -35,7 +34,6 @@ def test_train():
 
 def test_inference():
     tmpdir = temp_dir
-    # Inference:
     from deepspectrumlite.__main__ import cli
     from click.testing import CliRunner
     from os.path import dirname, join
@@ -59,7 +57,6 @@ def test_inference():
 
 def test_devel_test():
     tmpdir = temp_dir
-    # Inference:
     from deepspectrumlite.__main__ import cli
     from click.testing import CliRunner
     from os.path import dirname, join
@@ -87,8 +84,6 @@ def test_stats():
     from deepspectrumlite.__main__ import cli
     from click.testing import CliRunner
     from os.path import dirname, join
-
-    cur_dir = dirname(__file__)
 
     runner = CliRunner()
     result = runner.invoke(cli,
@@ -135,6 +130,24 @@ def test_tflite_stats():
                            ],
                            catch_exceptions=False)
     assert result.exit_code == 0, f"Exit code for tflite-stats is not 0 but " + str(result.exit_code)
+
+
+def test_create_preprocessor():
+    from deepspectrumlite.__main__ import cli
+    from click.testing import CliRunner
+    from os.path import dirname, join
+
+    cur_dir = dirname(__file__)
+    examples = join(dirname(dirname(cur_dir)), 'examples')
+
+    runner = CliRunner()
+    result = runner.invoke(cli,
+                           args=[
+                               '-vv', 'create-preprocessor',
+                               '-hc', join(examples, 'hp_config.json')
+                           ],
+                           catch_exceptions=False)
+    assert result.exit_code == 0, f"Exit code for create_preprocessor is not 0 but " + str(result.exit_code)
 
 
 def pytest_sessionfinish():

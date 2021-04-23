@@ -89,7 +89,7 @@ class PreprocessAudio(tf.Module):
         return x
 
     @tf.function(input_signature=[tf.TensorSpec(shape=(1, 16000), dtype=tf.float32)])
-    def preprocess(self, audio_signal):
+    def preprocess(self, audio_signal): # pragma: no cover
         decoded_audio = audio_signal * (0.7079 / tf.reduce_max(tf.abs(audio_signal)))
 
         frame_length = int(self.hparams['stft_window_size'] * self.hparams['sample_rate'])

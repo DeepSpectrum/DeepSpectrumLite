@@ -69,7 +69,8 @@ def get_detailed_stats(model_h5_path):
             # print(json_export)
     tf.compat.v1.reset_default_graph()
 
-def get_flops(model_h5_path):
+# deprecated
+def get_flops(model_h5_path): # pragma: no cover
     tf.compat.v1.enable_eager_execution()
     session = tf.compat.v1.Session()
     graph = tf.compat.v1.get_default_graph()

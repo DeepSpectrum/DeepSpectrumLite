@@ -300,7 +300,7 @@ class DataPipeline:
         dataset = dataset.prefetch(tf.data.AUTOTUNE)
         return dataset
 
-    def read_file_function(self, file_data, label):
+    def read_file_function(self, file_data, label): # pragma: no cover
         with tf.name_scope("read_file"):
             filename = file_data[0]
             segment = tf.strings.to_number(file_data[1], out_type=tf.dtypes.int32, name="segment_to_number")
@@ -337,7 +337,7 @@ class DataPipeline:
 
                 return decoded_audio, label_one_hot
 
-    def generate_spectrogram(self, decoded_audio, label):
+    def generate_spectrogram(self, decoded_audio, label): # pragma: no cover
         with tf.name_scope("generate_spectrogram"):
             with tf.device(self.device):
 
@@ -424,7 +424,7 @@ class DataPipeline:
                 return image_data, label
 
 
-def preprocess_scalar_zero(model_name: str):
+def preprocess_scalar_zero(model_name: str): # pragma: no cover
     available_modes = {
         "resnet50": 'caffee',
         "xception": 'tf',
