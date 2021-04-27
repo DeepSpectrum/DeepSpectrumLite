@@ -18,7 +18,7 @@ Published under GPLv3, please see the `LICENSE` file for details.
 Please direct any questions or requests to Shahin Amiriparian (shahin.amiriparian at informatik.uni-augsburg.de) or Tobias Hübner (tobias.huebner at informatik.uni-augsburg.de).
 
 # Citing
-If you use EmoNet or any code from EmoNet in your research work, you are kindly asked to acknowledge the use of EmoNet in your publications.
+If you use DeepSpectrumLite or any code from DeepSpectrumLite in your research work, you are kindly asked to acknowledge the use of DeepSpectrumLite in your publications.
 > S. Amiriparian, T. Hübner, M. Gerczuk and S. Ottl and B. W. Schuller, “DeepSpectrumLite: A Power-Efficient Transfer Learning Framework for Embedded Speech and Audio Processing from Decentralised Data,” 2021. [https://arxiv.org/abs/2104.11629](https://arxiv.org/abs/2104.11629)
 
 
