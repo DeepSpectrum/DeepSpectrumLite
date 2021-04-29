@@ -17,6 +17,22 @@ Published under GPLv3, please see the `LICENSE` file for details.
 
 Please direct any questions or requests to Shahin Amiriparian (shahin.amiriparian at informatik.uni-augsburg.de) or Tobias Hübner (tobias.huebner at informatik.uni-augsburg.de).
 
+# Citing
+If you use DeepSpectrumLite or any code from DeepSpectrumLite in your research work, you are kindly asked to acknowledge the use of DeepSpectrumLite in your publications.
+> S. Amiriparian, T. Hübner, M. Gerczuk and S. Ottl and B. W. Schuller, “DeepSpectrumLite: A Power-Efficient Transfer Learning Framework for Embedded Speech and Audio Processing from Decentralised Data,” 2021. [https://arxiv.org/abs/2104.11629](https://arxiv.org/abs/2104.11629)
+
+
+```
+@misc{amiriparian2021deepspectrumlite,
+      title={DeepSpectrumLite: A Power-Efficient Transfer Learning Framework for Embedded Speech and Audio Processing from Decentralised Data}, 
+      author={Shahin Amiriparian and Tobias Hübner and Maurice Gerczuk and Sandra Ottl and Björn W. Schuller},
+      year={2021},
+      eprint={2104.11629},
+      archivePrefix={arXiv},
+      primaryClass={cs.SD}
+}
+```
+
 # Why DeepSpectrumLite?
 DeepSpectrumLite is built upon TensorFlow Lite which is a specialised version of TensorFlow that supports embedded devices.
 However, TensorFlow Lite does not support all basic TensorFlow functions for audio signal processing and plot image generation. DeepSpectrumLite offers implementations for unsupported functions.
@@ -57,7 +73,7 @@ To train a model use the following command and pass the path to your data direct
 deepspectrumlite train -d [path/to/data] -md [save/models/to] -hc [path/to/hyperparameter_config.json] -cc [path/to/class_config.json] -l [path/to/labels.csv]
 ```
 
-For a full rundown of all commandline arguments, call `python -m cli.train --help`.
+For a full rundown of all commandline arguments, call `deepspectrumlite train --help`.
 Other training parameters including label parser file, problem definition, audio signal preprocessing, model configuration are defined in the hyperparameter config json file.
 
 ## Test
