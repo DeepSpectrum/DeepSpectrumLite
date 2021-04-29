@@ -41,7 +41,7 @@ class TransferBaseModel(Model):
 
             optimizer = self.get_optimizer_fn()
             optimizer._set_hyper('learning_rate', self.hy_params['fine_learning_rate'])
-            self.get_model().compile(loss=keras.losses.categorical_crossentropy, optimizer=optimizer,
+            self.get_model().compile(loss=self.hy_params['loss'], optimizer=optimizer,
                                      metrics=self._metrics)
 
         self.get_model().summary(print_fn=log.info)

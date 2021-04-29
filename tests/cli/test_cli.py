@@ -155,5 +155,5 @@ def test_create_preprocessor():
 def pytest_sessionfinish():
     shutil.rmtree(temp_dir)
 
-if __name__ == '__main__':
-     print(test_create_preprocessor())
+# if __name__ == '__main__':
+#      print(test_create_preprocessor())
