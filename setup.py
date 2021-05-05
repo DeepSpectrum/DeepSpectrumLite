@@ -25,6 +25,7 @@ install_requires = [
     "pillow",
     "pandas",
     "scikit-learn",
+    "click",
     "tensorflow==2.4.1",
     "tensorboard==2.4.1",
     "keras-applications"
