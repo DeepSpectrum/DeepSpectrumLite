@@ -92,9 +92,9 @@ class DataPipeline:
 
         self.preprocessors = {
             "vgg16":
-                self.__preprocess_vgg,
+                tf.keras.applications.vgg16.preprocess_input,
             "vgg19":
-                self.__preprocess_vgg,
+                tf.keras.applications.vgg19.preprocess_input,
             "resnet50":
                 tf.keras.applications.resnet50.preprocess_input,
             "xception":
@@ -121,7 +121,10 @@ class DataPipeline:
                 tf.keras.applications.imagenet_utils.preprocess_input,
         }
 
-    def __preprocess_vgg(self, x):
+    def __preprocess_vgg(self, x, data_format=None):
+        """
+        Legacy function for VGG16 and VGG19 preprocessing without centering.
+        """
         x = x[:, :, :, ::-1]
         return x
 
