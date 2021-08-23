@@ -14,6 +14,7 @@
     "finetune_layer":   [0.7],
     "loss":             ["categorical_crossentropy"],
     "activation":       ["arelu"],
+    "output_activation": ["softmax"],
     "pre_epochs":       [40],
     "epochs":           [100],
     "batch_size":       [32],
