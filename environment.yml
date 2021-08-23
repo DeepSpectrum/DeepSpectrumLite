@@ -1,20 +1,20 @@
 name: DeepSpectrumLite
 channels:
   - defaults
-  - pytorch
   - conda-forge
 dependencies:
   - python=3.8
   - pip
-  - click
-  - imread
-  - librosa
-  - numba
-  - pillow
-  - pandas
-  - scikit-learn
+  - cudatoolkit=11.0
+  - cudnn=8.0
   - pip:
-      - tensorflow==2.4.1
-      - tensorboard==2.4.1
-      - keras-applications
-      - -e .
+    - click
+    - librosa
+    - numba
+    - pillow
+    - pandas
+    - scikit-learn
+    - tensorflow==2.4.1
+    - tensorboard==2.4.1
+    - keras-applications
+    - -e .

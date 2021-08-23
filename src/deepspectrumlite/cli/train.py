@@ -25,6 +25,7 @@ import sys
 import json
 import os
 from os.path import join, dirname, realpath
+import platform
 
 log = logging.getLogger(__name__)
 
@@ -160,7 +161,16 @@ def train(model_dir, data_dir, class_config, hyper_config, label_file, disable_c
             raise ValueError('Please provide the parser in the following format: path.to.parser_file.py:ParserClass')
 
         log.info(f'Using custom external parser: {label_parser_key}')
-        path, class_name = label_parser_key.split(':')
+        if platform.system() == "Windows": # need to consider : after drive letter in windows paths
+            # split
+            s = label_parser_key.split(":")
+            assert len(s) == 3
+            # reconstruct path from first two letters
+            path = "" + s[0] + ":" + s[1]
+            class_name = s[-1]
+
+        else:   # Linux or Mac
+            path, class_name = label_parser_key.split(':')
         module_name = os.path.splitext(os.path.basename(path))[0]
         dir_path = os.path.dirname(os.path.realpath(__file__))
         path = os.path.join(dir_path, path)
