@@ -105,7 +105,7 @@ class TransferBaseModel(Model):
         dense_1 = keras.layers.Dense(hy_params['num_units'], activation=self.get_activation_fn())(flatten)
         dropout_1 = keras.layers.Dropout(rate=hy_params['dropout'])(dense_1)
 
-        activation = 'softmax'
+        activation = 'softmax' if self.prediction_type == 'categorical' else 'linear'
         if 'output_activation' in hy_params:
             activation = hy_params['output_activation']
         predictions = tf.keras.layers.Dense(len(self.data_classes), activation=activation)(dropout_1)
