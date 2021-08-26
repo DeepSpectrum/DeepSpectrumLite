@@ -14,7 +14,7 @@ dependencies:
     - pillow
     - pandas
     - scikit-learn
-    - tensorflow==2.4.1
-    - tensorboard==2.4.1
+    - tensorflow==2.5.1
+    - tensorboard==2.5
     - keras-applications
     - -e .
