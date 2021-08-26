@@ -79,7 +79,9 @@ _DESCRIPTION = 'Predict a file using an existing DeepSpectrumLite transer learni
 )
 
 @click.command(help=_DESCRIPTION)
-def predict(model_dir, data_dir, class_config, hyper_config, **kwargs):
+@click.pass_context
+def predict(ctx, model_dir, data_dir, class_config, hyper_config, **kwargs):
+    verbose = ctx.obj['verbose']
     f = open(class_config)
     data = json.load(f)
     f.close()
@@ -145,7 +147,7 @@ def predict(model_dir, data_dir, class_config, hyper_config, **kwargs):
         filename_list = data_pipeline.filenames
         dataset = data_pipeline.pipeline(cache=False, shuffle=False, drop_remainder=False)
 
-        X_probs = model.predict(x=dataset)
+        X_probs = model.predict(x=dataset, verbose=verbose)
         true_categories = tf.concat([y for x, y in dataset], axis=0)
         X_pred = tf.argmax(X_probs, axis=1)
         X_pred_ny = X_pred.numpy()

@@ -127,7 +127,7 @@ class TransferBaseModel(Model):
                                        batch_size=self.hy_params['batch_size'],
                                        shuffle=True,
                                        validation_data=devel_dataset,
-                                       callbacks=self.get_callbacks(), verbose=0)
+                                       callbacks=self.get_callbacks(), verbose=self.verbose)
 
         if self.hy_params['weights'] != '' and self.hy_params['finetune_layer'] > 0:
             self.retrain_model()
@@ -137,4 +137,4 @@ class TransferBaseModel(Model):
                                  batch_size=self.hy_params['batch_size'],
                                  shuffle=True,
                                  validation_data=devel_dataset,
-                                 callbacks=self.get_callbacks(), verbose=0)
+                                 callbacks=self.get_callbacks(), verbose=self.verbose)

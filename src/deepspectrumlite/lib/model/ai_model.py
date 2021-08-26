@@ -42,7 +42,8 @@ class Model:
                  data_classes,
                  run_id: int,
                  run_dir: str = None,
-                 use_ram: bool = True
+                 use_ram: bool = True,
+                 verbose: int = 0
                  ):
         """
         Abstract model implementation
@@ -55,14 +56,18 @@ class Model:
                 log directory of tensorboard Default: None
             use_ram: bool (optional)
                 If enabled, the whole train data set will be saved in memory.
-                Otherwise only the current batch will be loaded to memory. Default: True
+                Otherwise only the current batch will be loaded to memory. Default: Truek
+            verbose: int (optional)
+                Verbosity for keras training and evaluation calls. Default: 0
         """
         self._run_id = run_id
         self.hy_params = hy_params.get_values(iteration_no=self._run_id)
         self.hy_params_tb = hy_params.get_values_tensorboard(iteration_no=self._run_id)
         self.use_ram = use_ram
         self.input_shape = input_shape
-        self.verbose = 0
+
+        # convert to keras verbosities
+        self.verbose = 1 if verbose > 1 else 2 if verbose == 1 else verbose
         self.confusion_matrix = None
         self.run_dir = run_dir
         self.data_classes = data_classes
@@ -98,7 +103,7 @@ class Model:
                              batch_size=self.hy_params['batch_size'],
                              shuffle=True,
                              validation_data=devel_dataset,
-                             callbacks=self.get_callbacks(), verbose=0)
+                             callbacks=self.get_callbacks(), verbose=self.verbose)
 
     '''
     def test_grouped(self, test_data_grouped):
@@ -217,7 +222,7 @@ class Model:
         """
         results = self.get_model().evaluate(x=test_dataset,
                                             batch_size=self.hy_params['batch_size'],
-                                            verbose=0)
+                                            verbose=self.verbose)
 
         if self.prediction_type == 'categorical':
             X_pred = self.get_model().predict(x=test_dataset)

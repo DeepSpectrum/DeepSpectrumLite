@@ -84,8 +84,9 @@ _DESCRIPTION = 'Test a DeepSpectrumLite transer learning model.'
 )
 
 @click.command(help=_DESCRIPTION)
-def devel_test(model_dir, data_dir, class_config, hyper_config, label_file, **kwargs):
-
+@click.pass_context
+def devel_test(ctx, model_dir, data_dir, class_config, hyper_config, label_file, **kwargs):
+    verbose = ctx.obj['verbose']
     f = open(class_config)
     data = json.load(f)
     f.close()
@@ -168,7 +169,7 @@ def devel_test(model_dir, data_dir, class_config, hyper_config, label_file, **kw
             filename_list = data_pipeline.filenames
             dataset = data_pipeline.pipeline(cache=False, shuffle=False, drop_remainder=False)
 
-            X_pred = model.predict(x=dataset)
+            X_pred = model.predict(x=dataset, verbose=verbose)
             true_categories = tf.concat([y for x, y in dataset], axis=0)
 
             X_pred = tf.argmax(X_pred, axis=1)
