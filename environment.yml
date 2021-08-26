@@ -5,8 +5,8 @@ channels:
 dependencies:
   - python=3.8
   - pip
-  - cudatoolkit=11.0
-  - cudnn=8.0
+  - cudatoolkit=11.2
+  - cudnn=8.1
   - pip:
     - click
     - librosa

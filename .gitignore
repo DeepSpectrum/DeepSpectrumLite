@@ -16,6 +16,3 @@ dist/*
 .coverage.*
 *.pytest_cache
 .direnv/
-flake.lock
-flake.nix
-.envrc
