@@ -57,31 +57,6 @@
         "type": "github"
       }
     },
-    "mach-nix_2": {
-      "inputs": {
-        "flake-utils": [
-          "flake-utils"
-        ],
-        "nixpkgs": [
-          "nixpkgs"
-        ],
-        "pypi-deps-db": [
-          "pypi-deps-db"
-        ]
-      },
-      "locked": {
-        "lastModified": 1618982703,
-        "narHash": "sha256-9dSHtu9XfK04caPx6kXvmhcnC3t+8bS65yqS6U4nQ/g=",
-        "owner": "DavHau",
-        "repo": "mach-nix",
-        "rev": "9543999c8abb56524347a6236e7b1c5e4aaa2c1d",
-        "type": "github"
-      },
-      "original": {
-        "id": "mach-nix",
-        "type": "indirect"
-      }
-    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1629705759,
@@ -112,25 +87,14 @@
         "type": "indirect"
       }
     },
-    "nixpkgs_2": {
-      "locked": {
-        "lastModified": 1618619705,
-        "narHash": "sha256-+yBGazqJxjT+BR00oCNamOgiEFPHBOPkqak7MUYcpBA=",
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "e5cc06a1e806070693add4f231060a62b962fc44",
-        "type": "github"
-      },
-      "original": {
-        "id": "nixpkgs",
-        "ref": "nixos-unstable",
-        "type": "indirect"
-      }
-    },
     "pypi-deps-db": {
       "inputs": {
-        "mach-nix": "mach-nix_2",
-        "nixpkgs": "nixpkgs_2",
+        "mach-nix": [
+          "mach-nix"
+        ],
+        "nixpkgs": [
+          "nixpkgs"
+        ],
         "nixpkgsPy36": "nixpkgsPy36",
         "pypiIndex": "pypiIndex"
       },

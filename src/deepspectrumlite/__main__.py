@@ -56,7 +56,6 @@ version_str = f"DeepSpectrumLite %(version)s\nCopyright (C) 2020-2021 Shahin Ami
 def cli(ctx, verbose):
     log_levels = ['ERROR', 'INFO', 'DEBUG']
     verbose = min(2, verbose)
-    
     ctx.ensure_object(dict)
     ctx.obj['verbose'] = verbose
 
