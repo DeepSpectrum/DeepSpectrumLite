@@ -23,12 +23,16 @@
         cudnn_cudatoolkit_11_2
         pkgs.stdenv.cc.cc
       ];
+      commonOptions = {
+        ignoreDataOutdated = true;
+        python = "python38";
+        src = ./.;
+        providers.soundfile = "nixpkgs";
+      };
       package = { pkgs ? import <nixpkgs> }: mach-nix.lib.${pkgs.system}.buildPythonApplication
         {
-          pname = "deepspectrumlite";
-          python = "python38";
-          src = ./.;
-          providers.soundfile = "nixpkgs";
+          inherit (commonOptions) ignoreDataOutdated python src providers;
+          pname = name;
           requirements = builtins.readFile ./requirements.txt;
 
           postInstall = ''
@@ -49,10 +53,8 @@
         };
       };
       developmentEnv = { pkgs ? import <nixpkgs> }: mach-nix.lib.${pkgs.system}.buildPythonPackage {
-        python = "python38";
+        inherit (commonOptions) ignoreDataOutdated python src providers;
         pname = name;
-        providers.soundfile = "nixpkgs";
-        src = ./.;
         requirements = builtins.readFile ./requirements-test.txt;
       };
       shell = { pkgs ? import <nixpkgs> }: pkgs.mkShell {
