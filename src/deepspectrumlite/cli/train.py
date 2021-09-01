@@ -78,7 +78,8 @@ _DESCRIPTION = 'Train a DeepSpectrumLite transer learning model.'
 )
 
 @click.command(help=_DESCRIPTION)
-def train(model_dir, data_dir, class_config, hyper_config, label_file, disable_cache, **kwargs):
+@click.pass_context
+def train(ctx, model_dir, data_dir, class_config, hyper_config, label_file, disable_cache, **kwargs):
     import tensorflow as tf
     # tf.compat.v1.enable_eager_execution()
     # tf.config.experimental_run_functions_eagerly(True)
@@ -88,6 +89,8 @@ def train(model_dir, data_dir, class_config, hyper_config, label_file, disable_c
     from deepspectrumlite import HyperParameterList, TransferBaseModel, DataPipeline, \
         METRIC_ACCURACY, METRIC_MAE, METRIC_RMSE, METRIC_RECALL, METRIC_PRECISION, METRIC_F_SCORE, METRIC_LOSS, METRIC_MSE
     import math
+
+    verbose = ctx.obj['verbose']
 
     enable_cache = not disable_cache
     data_dir = os.path.join(data_dir, '') # add trailing slash
@@ -232,7 +235,8 @@ def train(model_dir, data_dir, class_config, hyper_config, label_file, disable_c
                                                     run_dir=run_log_dir,
                                                     data_classes=data_classes,
                                                     use_ram=True,
-                                                    run_id=iteration_no)
+                                                    run_id=iteration_no,
+                                                    verbose=verbose)
 
             model.run(train_dataset=train_dataset,
                       test_dataset=test_dataset,

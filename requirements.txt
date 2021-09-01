@@ -1,6 +1,3 @@
-pytest==6.2.3
-coveralls
-pytest-cov
 librosa
 numba
 click

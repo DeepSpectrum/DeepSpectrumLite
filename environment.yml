@@ -5,8 +5,8 @@ channels:
 dependencies:
   - python=3.8
   - pip
-  - cudatoolkit=11.0
-  - cudnn=8.0
+  - cudatoolkit=11.2
+  - cudnn=8.1
   - pip:
     - click
     - librosa
@@ -14,7 +14,7 @@ dependencies:
     - pillow
     - pandas
     - scikit-learn
-    - tensorflow==2.4.1
-    - tensorboard==2.4.1
+    - tensorflow==2.5.1
+    - tensorboard==2.5
     - keras-applications
     - -e .

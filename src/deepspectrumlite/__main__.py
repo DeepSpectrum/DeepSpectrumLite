@@ -38,7 +38,6 @@ from deepspectrumlite.cli.utils import add_options
 from deepspectrumlite import __version__ as VERSION
 
 
-
 _global_options = [
     click.option('-v', '--verbose', count=True),
 ]
@@ -53,9 +52,12 @@ version_str = f"DeepSpectrumLite %(version)s\nCopyright (C) 2020-2021 Shahin Ami
 @click.group()
 @add_options(_global_options)
 @click.version_option(VERSION, message=version_str)
-def cli(verbose):
+@click.pass_context
+def cli(ctx, verbose):
     log_levels = ['ERROR', 'INFO', 'DEBUG']
     verbose = min(2, verbose)
+    ctx.ensure_object(dict)
+    ctx.obj['verbose'] = verbose
 
     if verbose == 2:
         level = logging.DEBUG
@@ -63,33 +65,33 @@ def cli(verbose):
         level = logging.INFO
     else:
         level = logging.ERROR
-    # logging.basicConfig()
-    # logging.config.dictConfig({
-    #     'version': 1,
-    #     'disable_existing_loggers': False,  # this fixes the problem
-    #     'formatters': {
-    #         'standard': {
-    #             'format': '%(asctime)s [%(levelname)s] %(name)s: %(message)s'
-    #         },
-    #     },
-    #     'handlers': {
-    #         'default': {
-    #             'level': log_levels[verbose],
-    #             'class': 'logging.StreamHandler',
-    #             'formatter': 'standard',
-    #             'stream': 'ext://sys.stdout'
-    #         },
-    #     },
-    #     'loggers': {
-    #         '': {
-    #             'handlers': ['default'],
-    #             'level': log_levels[verbose],
-    #             'propagate': True
-    #         }
-    #     }
-    # })
+    logging.basicConfig()
+    logging.config.dictConfig({
+        'version': 1,
+        'disable_existing_loggers': False,  # this fixes the problem
+        'formatters': {
+            'standard': {
+                'format': '%(asctime)s [%(levelname)s] %(name)s: %(message)s'
+            },
+        },
+        'handlers': {
+            'default': {
+                'level': log_levels[verbose],
+                'class': 'logging.StreamHandler',
+                'formatter': 'standard',
+                'stream': 'ext://sys.stdout'
+            },
+        },
+        'loggers': {
+            '': {
+                'handlers': ['default'],
+                'level': log_levels[verbose],
+                'propagate': True
+            }
+        }
+    })
 
-    # logging.debug('Verbosity: %s' % log_levels[verbose])
+    logging.debug('Verbosity: %s' % log_levels[verbose])
     # logging.error("error test")
     # logging.debug("debug test")
     # logging.info("info test")
@@ -106,4 +108,4 @@ cli.add_command(create_preprocessor)
 cli.add_command(predict)
 
 if __name__ == '__main__':
-    cli()
+    cli(obj={})

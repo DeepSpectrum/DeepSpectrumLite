@@ -10,7 +10,7 @@ from setuptools import setup, find_packages
 from subprocess import CalledProcessError, check_output
 
 PROJECT = "DeepSpectrumLite"
-VERSION = "1.0.1"
+VERSION = "1.0.2"
 LICENSE = "GPLv3+"
 AUTHOR = "Tobias Hübner"
 AUTHOR_EMAIL = "tobias.huebner@informatik.uni-augsburg.de"
@@ -26,8 +26,8 @@ install_requires = [
     "pandas",
     "scikit-learn",
     "click",
-    "tensorflow==2.4.1",
-    "tensorboard==2.4.1",
+    "tensorflow==2.5.1",
+    "tensorboard==2.5",
     "keras-applications"
 ]
 
