@@ -1,5 +1,4 @@
 *.pyc
-*.h5
 *.idea
 *.DS_Store
 *.tflite
