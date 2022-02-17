@@ -12,7 +12,7 @@ Activations of a specific layer then form the final feature vectors which are us
 
 The trained models can be easily converted to a TensorFlow Lite model. During the converting process, the model becomes smaller and faster optimised for inference on embedded devices.
 
-**(c) 2020-2021 Shahin Amiriparian, Tobias Hübner, Maurice Gerczuk, Sandra Ottl, Björn Schuller: Universität Augsburg**
+**(c) 2020-2021 Shahin Amiriparian, Tobias Hübner, Vincent Karas, Maurice Gerczuk, Sandra Ottl, Björn Schuller: Universität Augsburg**
 Published under GPLv3, please see the `LICENSE` file for details.
 
 Please direct any questions or requests to Shahin Amiriparian (shahin.amiriparian at informatik.uni-augsburg.de) or Tobias Hübner (tobias.huebner at informatik.uni-augsburg.de).
@@ -107,6 +107,11 @@ If you want to check out the parameter quantity and FLOPS your .h5 model you can
 ```bash
 deepspectrumlite stats -d [path/to/model.h5] -hc [path/to/hyperparameter_config.json]
 ```
+
+## Explainability with help of SHAP
+We discuss the DeepSpectrumLite models’ outputs with the help of SHapley Additive exPlanations (SHAP) method [(Lundberg and Lee,2017)](https://proceedings.neurips.cc/paper/2017/file/8a20a8621978632d76c43dfd28b67767-Paper.pdf).
+Using the provided jupyter notebook in `examples/explain.ipynb`, you should be able to get the SHAP outputs from sample spectrogram inputs.
+
 
 ## Convert .h5 to .tflite
 If you want to convert your trained model to TensorFlow Lite, use `cli.convert`:
