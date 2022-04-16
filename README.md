@@ -20,7 +20,7 @@ Please direct any questions or requests to Shahin Amiriparian (shahin.amiriparia
 # Citing
 If you use DeepSpectrumLite or any code from DeepSpectrumLite in your research work, you are kindly asked to acknowledge the use of DeepSpectrumLite in your publications.
 > Amiriparian, S., Hübner, T., Karas, V., Gerczuk, M., Ottl, S., & Schuller, B. W. (2022). DeepSpectrumLite: A Power-Efficient Transfer Learning Framework for Embedded Speech and Audio Processing From Decentralized Data. Frontiers in Artificial Intelligence, 5.
-[https://www.frontiersin.org/articles/10.3389/frai.2022.856232/](https://www.frontiersin.org/articles/10.3389/frai.2022.856232/)
+[https://doi.org/10.3389/frai.2022.856232](https://doi.org/10.3389/frai.2022.856232)
 
 
 ```
