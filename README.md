@@ -12,24 +12,27 @@ Activations of a specific layer then form the final feature vectors which are us
 
 The trained models can be easily converted to a TensorFlow Lite model. During the converting process, the model becomes smaller and faster optimised for inference on embedded devices.
 
-**(c) 2020-2021 Shahin Amiriparian, Tobias Hübner, Vincent Karas, Maurice Gerczuk, Sandra Ottl, Björn Schuller: Universität Augsburg**
+**(c) 2020-2022 Shahin Amiriparian, Tobias Hübner, Vincent Karas, Maurice Gerczuk, Sandra Ottl, Björn Schuller: University of Augsburg**
 Published under GPLv3, please see the `LICENSE` file for details.
 
 Please direct any questions or requests to Shahin Amiriparian (shahin.amiriparian at informatik.uni-augsburg.de) or Tobias Hübner (tobias.huebner at informatik.uni-augsburg.de).
 
 # Citing
 If you use DeepSpectrumLite or any code from DeepSpectrumLite in your research work, you are kindly asked to acknowledge the use of DeepSpectrumLite in your publications.
-> S. Amiriparian, T. Hübner, M. Gerczuk and S. Ottl and B. W. Schuller, “DeepSpectrumLite: A Power-Efficient Transfer Learning Framework for Embedded Speech and Audio Processing from Decentralised Data,” 2021. [https://arxiv.org/abs/2104.11629](https://arxiv.org/abs/2104.11629)
+> Amiriparian, S., Hübner, T., Karas, V., Gerczuk, M., Ottl, S., & Schuller, B. W. (2022). DeepSpectrumLite: A Power-Efficient Transfer Learning Framework for Embedded Speech and Audio Processing From Decentralized Data. Frontiers in Artificial Intelligence, 5.
+[https://www.frontiersin.org/articles/10.3389/frai.2022.856232/](https://www.frontiersin.org/articles/10.3389/frai.2022.856232/)
 
 
 ```
-@misc{amiriparian2021deepspectrumlite,
-      title={DeepSpectrumLite: A Power-Efficient Transfer Learning Framework for Embedded Speech and Audio Processing from Decentralised Data}, 
-      author={Shahin Amiriparian and Tobias Hübner and Maurice Gerczuk and Sandra Ottl and Björn W. Schuller},
-      year={2021},
-      eprint={2104.11629},
-      archivePrefix={arXiv},
-      primaryClass={cs.SD}
+@ARTICLE{Amiriparian22-DAP,
+AUTHOR={Amiriparian, Shahin and Hübner, Tobias and Karas, Vincent and Gerczuk, Maurice and Ottl, Sandra and Schuller, Björn W.},   
+TITLE={DeepSpectrumLite: A Power-Efficient Transfer Learning Framework for Embedded Speech and Audio Processing From Decentralized Data},      
+JOURNAL={Frontiers in Artificial Intelligence},      
+VOLUME={5},      
+YEAR={2022},      
+URL={https://www.frontiersin.org/article/10.3389/frai.2022.856232},       
+DOI={10.3389/frai.2022.856232},      
+ISSN={2624-8212},   
 }
 ```
 
